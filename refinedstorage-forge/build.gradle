@@ -48,6 +48,21 @@ repositories {
 dependencies {
     implementation minecraft.dependency('net.minecraftforge:forge:26.3-66.0.10')
     annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.6'
+
+    // Refined Storage common code (loader-independent) + its API modules.
+    // Transitive `api` dependencies of :refinedstorage-common cover compilation;
+    // jarJar embeds everything needed at runtime (incl. common assets).
+    implementation project(':refinedstorage-common')
+    jarJar project(':refinedstorage-common')
+    jarJar project(':refinedstorage-common-api')
+    jarJar project(':refinedstorage-core-api')
+    jarJar project(':refinedstorage-resource-api')
+    jarJar project(':refinedstorage-storage-api')
+    jarJar project(':refinedstorage-network-api')
+    jarJar project(':refinedstorage-network')
+    jarJar project(':refinedstorage-query-parser')
+
+    compileOnly 'org.jspecify:jspecify:1.0.0'
 }
 
 tasks.withType(JavaCompile).configureEach {

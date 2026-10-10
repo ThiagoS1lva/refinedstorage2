@@ -1,0 +1,21 @@
+package com.refinedmods.refinedstorage.forge.api;
+
+import com.refinedmods.refinedstorage.api.resource.ResourceKey;
+import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
+
+import net.minecraft.core.Direction;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import org.apiguardian.api.API;
+import org.jspecify.annotations.Nullable;
+
+@API(status = API.Status.STABLE, since = "2.0.0-milestone.4.5")
+public interface RefinedStorageForgeApi {
+    RefinedStorageForgeApi INSTANCE = new RefinedStorageForgeApiProxy();
+
+    BlockCapability<NetworkNodeContainerProvider, @Nullable Direction> getNetworkNodeContainerProviderCapability();
+
+    void addResourceHandlerExternalPatternSinkStrategyFactory(
+        Class<? extends ResourceKey> resourceType,
+        ResourceHandlerExternalPatternSinkStrategyFactory factory
+    );
+}
