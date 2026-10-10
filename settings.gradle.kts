@@ -39,6 +39,7 @@ pluginManagement {
         id("com.refinedmods.refinedarchitect.common").version(refinedarchitectVersion)
         id("com.refinedmods.refinedarchitect.neoforge").version(refinedarchitectVersion)
         id("com.refinedmods.refinedarchitect.fabric").version(refinedarchitectVersion)
+        id("org.gradle.toolchains.foojay-resolver-convention").version("1.0.0")
     }
 }
 
@@ -56,4 +57,5 @@ include("refinedstorage-fabric")
 include("refinedstorage-fabric-api")
 include("refinedstorage-neoforge")
 include("refinedstorage-neoforge-api")
+include("refinedstorage-forge")
 include("refinedstorage-network-test")
