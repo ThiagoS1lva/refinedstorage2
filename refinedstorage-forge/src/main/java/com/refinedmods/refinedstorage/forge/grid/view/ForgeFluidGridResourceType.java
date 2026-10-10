@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fml.ModList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,12 +31,21 @@ public class ForgeFluidGridResourceType extends AbstractFluidGridResourceType {
     @Override
     protected String getTooltip(final FluidResource resource) {
         try {
-            return toStack(resource)
-                .getTooltipLines(Item.TooltipContext.of(ClientPlatformUtil.getClientLevel()),
-                    ClientPlatformUtil.getClientPlayer(), TooltipFlag.ADVANCED)
-                .stream()
-                .map(Component::getString)
-                .collect(Collectors.joining("\n"));
+            if (resource.fluid() instanceof net.minecraft.world.level.material.FlowingFluid flowing) {
+                final Item bucketItem = flowing.getBucket();
+                if (bucketItem != null) {
+                    final ItemStack bucketStack = new ItemStack(bucketItem);
+                    return bucketStack.getTooltipLines(
+                            Item.TooltipContext.of(ClientPlatformUtil.getClientLevel()),
+                            ClientPlatformUtil.getClientPlayer(),
+                            TooltipFlag.ADVANCED
+                        )
+                        .stream()
+                        .map(Component::getString)
+                        .collect(Collectors.joining("\n"));
+                }
+            }
+            return toStack(resource).getDisplayName().getString();
         } catch (final Throwable t) {
             LOGGER.warn("Failed to get tooltip for fluid {}", resource, t);
             return "";
@@ -45,21 +54,20 @@ public class ForgeFluidGridResourceType extends AbstractFluidGridResourceType {
 
     @Override
     protected String getModName(final String modId) {
-        return ModList.get().getModContainerById(modId)
+        return ModList.getModContainerById(modId)
             .map(container -> container.getModInfo().getDisplayName())
             .orElse("");
     }
 
     @Override
     protected String getName(final FluidResource fluidResource) {
-        return toStack(fluidResource).getHoverName().getString();
+        return toStack(fluidResource).getDisplayName().getString();
     }
 
     private FluidStack toStack(final FluidResource fluidResource) {
-        return stackCache.computeIfAbsent(fluidResource, r -> new FluidStack(
-            BuiltInRegistries.FLUID.wrapAsHolder(r.fluid()),
-            FluidType.BUCKET_VOLUME,
-            r.components()
-        ));
+        return stackCache.computeIfAbsent(
+            fluidResource,
+            r -> new FluidStack(r.fluid(), FluidType.BUCKET_VOLUME)
+        );
     }
 }

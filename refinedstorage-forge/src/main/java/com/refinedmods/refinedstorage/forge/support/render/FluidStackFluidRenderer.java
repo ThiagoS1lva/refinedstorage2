@@ -4,11 +4,10 @@ import com.refinedmods.refinedstorage.common.support.render.FluidRenderer;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -20,38 +19,27 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.client.fluid.FluidTintSource;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
 
 public class FluidStackFluidRenderer implements FluidRenderer {
-    private final LoadingCache<FluidResource, FluidStack> stackCache = CacheBuilder.newBuilder()
-        .maximumSize(250)
-        .build(new CacheLoader<>() {
-            @Override
-            public FluidStack load(final FluidResource resource) {
-                return new FluidStack(
-                    BuiltInRegistries.FLUID.wrapAsHolder(resource.fluid()),
-                    FluidType.BUCKET_VOLUME,
-                    resource.components()
-                );
-            }
-        });
+    private final Map<FluidResource, FluidStack> stackCache = new HashMap<>();
 
     private FluidStack getStack(final FluidResource resource) {
-        return stackCache.getUnchecked(resource);
+        return stackCache.computeIfAbsent(
+            resource,
+            r -> new FluidStack(r.fluid(), FluidType.BUCKET_VOLUME)
+        );
     }
 
-    private int getTint(final FluidModel model, final FluidStack stack) {
-        final FluidTintSource tintSource = model.fluidTintSource();
-        if (tintSource == null) {
-            return 0xFFFFFFFF;
-        }
-        return tintSource.colorAsStack(stack);
+    private int getTint(final FluidStack stack) {
+        return IClientFluidTypeExtensions.of(stack.getFluid()).getTintColor(stack);
     }
 
     @Override
@@ -63,7 +51,7 @@ public class FluidStackFluidRenderer implements FluidRenderer {
         final FluidStateModelSet fluidStateModelSet = modelManager.getFluidStateModelSet();
         final FluidModel fluidModel = fluidStateModelSet.get(resource.fluid().defaultFluidState());
         final TextureAtlasSprite sprite = ClientPlatformUtil.getFluidSprite(fluidModel);
-        final int tint = getTint(fluidModel, stack);
+        final int tint = getTint(stack);
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, 16, 16, tint);
     }
 
@@ -76,7 +64,7 @@ public class FluidStackFluidRenderer implements FluidRenderer {
         final FluidStateModelSet fluidStateModelSet = modelManager.getFluidStateModelSet();
         final FluidModel fluidModel = fluidStateModelSet.get(resource.fluid().defaultFluidState());
         final TextureAtlasSprite sprite = ClientPlatformUtil.getFluidSprite(fluidModel);
-        final int tint = getTint(fluidModel, stack);
+        final int tint = getTint(stack);
         nodes.submitCustomGeometry(poseStack, RenderTypes.entitySolid(sprite.atlasLocation()), (pose, buffer) -> {
             final float scale = 0.3F;
             final var x0 = -scale / 2;
@@ -112,16 +100,22 @@ public class FluidStackFluidRenderer implements FluidRenderer {
 
     @Override
     public List<Component> getTooltip(final FluidResource resource) {
-        final Minecraft minecraft = Minecraft.getInstance();
-        return getStack(resource).getTooltipLines(
-            Item.TooltipContext.of(ClientPlatformUtil.getClientLevel()),
-            ClientPlatformUtil.getClientPlayer(),
-            minecraft.options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL
-        );
+        if (resource.fluid() instanceof FlowingFluid flowing) {
+            final Item bucketItem = flowing.getBucket();
+            if (bucketItem != null) {
+                final Minecraft minecraft = Minecraft.getInstance();
+                return new ItemStack(bucketItem).getTooltipLines(
+                    Item.TooltipContext.of(ClientPlatformUtil.getClientLevel()),
+                    ClientPlatformUtil.getClientPlayer(),
+                    minecraft.options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL
+                );
+            }
+        }
+        return List.of(getDisplayName(resource));
     }
 
     @Override
     public Component getDisplayName(final FluidResource resource) {
-        return getStack(resource).getHoverName();
+        return getStack(resource).getDisplayName();
     }
 }

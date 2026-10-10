@@ -1,32 +1,40 @@
 package com.refinedmods.refinedstorage.forge.storage.diskinterface;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
+import com.refinedmods.refinedstorage.common.support.direction.OrientedDirection;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.DyeColor;
-import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-public class DiskInterfaceUnbakedBlockStateModel implements CustomUnbakedBlockStateModel {
+public class DiskInterfaceUnbakedBlockStateModel implements BlockStateModel.Unbaked {
     public static final MapCodec<DiskInterfaceUnbakedBlockStateModel> MODEL_CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
-            DyeColor.CODEC.fieldOf("color").forGetter(unbaked -> unbaked.color)
+            DyeColor.CODEC.fieldOf("color").forGetter(unbaked -> unbaked.color),
+            StringRepresentable.fromEnum(OrientedDirection::values).fieldOf("direction")
+                .forGetter(unbaked -> unbaked.direction),
+            Codec.BOOL.fieldOf("active").forGetter(unbaked -> unbaked.active)
         ).apply(instance, DiskInterfaceUnbakedBlockStateModel::new));
 
     private final DyeColor color;
+    private final OrientedDirection direction;
+    private final boolean active;
 
-    public DiskInterfaceUnbakedBlockStateModel(final DyeColor color) {
+    public DiskInterfaceUnbakedBlockStateModel(final DyeColor color, final OrientedDirection direction,
+                                               final boolean active) {
         this.color = color;
+        this.direction = direction;
+        this.active = active;
     }
-
-    @Override
-    public MapCodec<? extends CustomUnbakedBlockStateModel> codec() {
+    public MapCodec<? extends BlockStateModel.Unbaked> codec() {
         return MODEL_CODEC;
     }
 
@@ -37,7 +45,7 @@ public class DiskInterfaceUnbakedBlockStateModel implements CustomUnbakedBlockSt
             new Material(createIdentifier("block/disk_interface/top")),
             debugName
         );
-        return new DiskInterfaceBlockStateModel(particleMaterial, modelBaker, color);
+        return new DiskInterfaceBlockStateModel(particleMaterial, modelBaker, color, direction, active);
     }
 
     @Override

@@ -3,8 +3,7 @@ package com.refinedmods.refinedstorage.forge.api;
 import com.refinedmods.refinedstorage.api.resource.ResourceKey;
 import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 
-import net.minecraft.core.Direction;
-import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.minecraftforge.common.capabilities.Capability;
 import org.jspecify.annotations.Nullable;
 
 public class RefinedStorageForgeApiProxy implements RefinedStorageForgeApi {
@@ -13,14 +12,13 @@ public class RefinedStorageForgeApiProxy implements RefinedStorageForgeApi {
 
     public void setDelegate(final RefinedStorageForgeApi delegate) {
         if (this.delegate != null) {
-            throw new IllegalStateException("NeoForge API already injected");
+            throw new IllegalStateException("Forge API already injected");
         }
         this.delegate = delegate;
     }
 
     @Override
-    public BlockCapability<NetworkNodeContainerProvider,
-        @Nullable Direction> getNetworkNodeContainerProviderCapability() {
+    public Capability<NetworkNodeContainerProvider> getNetworkNodeContainerProviderCapability() {
         return ensureLoaded().getNetworkNodeContainerProviderCapability();
     }
 
@@ -34,7 +32,7 @@ public class RefinedStorageForgeApiProxy implements RefinedStorageForgeApi {
 
     private RefinedStorageForgeApi ensureLoaded() {
         if (delegate == null) {
-            throw new IllegalStateException("NeoForge API not loaded yet");
+            throw new IllegalStateException("Forge API not loaded yet");
         }
         return delegate;
     }

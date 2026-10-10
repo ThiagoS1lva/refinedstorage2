@@ -10,8 +10,6 @@ import com.refinedmods.refinedstorage.forge.api.ResourceHandlerExternalPatternSi
 import java.util.Collection;
 import java.util.Map;
 
-import net.neoforged.neoforge.transfer.transaction.Transaction;
-
 class ResourceHandlerPatternProviderExternalPatternSink implements PlatformPatternProviderExternalPatternSink {
     private final Map<Class<? extends ResourceKey>, ResourceHandlerExternalPatternSinkStrategy> strategies;
 
@@ -24,22 +22,17 @@ class ResourceHandlerPatternProviderExternalPatternSink implements PlatformPatte
     @Override
     public ExternalPatternSink.Result insertAll(final Collection<ResourceAmount> resources, final Action action) {
         ExternalPatternSink.Result result = ExternalPatternSink.Result.SKIPPED;
-        try (Transaction tx = Transaction.openRoot()) {
-            for (final ResourceAmount resourceAmount : resources) {
-                final Class<? extends ResourceKey> resourceType = resourceAmount.resource().getClass();
-                final ResourceHandlerExternalPatternSinkStrategy strategy = strategies.get(resourceType);
-                if (strategy == null) {
-                    continue;
-                }
-                final ExternalPatternSink.Result strategyResult = strategy.insert(tx, resourceAmount);
-                if (strategyResult == ExternalPatternSink.Result.REJECTED) {
-                    return strategyResult;
-                }
-                result = and(result, strategyResult);
+        for (final ResourceAmount resourceAmount : resources) {
+            final Class<? extends ResourceKey> resourceType = resourceAmount.resource().getClass();
+            final ResourceHandlerExternalPatternSinkStrategy strategy = strategies.get(resourceType);
+            if (strategy == null) {
+                continue;
             }
-            if (action == Action.EXECUTE) {
-                tx.commit();
+            final ExternalPatternSink.Result strategyResult = strategy.insert(resourceAmount, action);
+            if (strategyResult == ExternalPatternSink.Result.REJECTED) {
+                return strategyResult;
             }
+            result = and(result, strategyResult);
         }
         return result;
     }

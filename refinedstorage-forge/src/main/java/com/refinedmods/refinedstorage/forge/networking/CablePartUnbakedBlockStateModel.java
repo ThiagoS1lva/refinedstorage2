@@ -6,27 +6,31 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
-import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-public class CablePartUnbakedBlockStateModel implements CustomUnbakedBlockStateModel {
+public class CablePartUnbakedBlockStateModel implements BlockStateModel.Unbaked {
     public static final MapCodec<CablePartUnbakedBlockStateModel> MODEL_CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
             DyeColor.CODEC.fieldOf("color").forGetter(model -> model.color),
-            Identifier.CODEC.fieldOf("part_model").forGetter(model -> model.partModel)
+            Identifier.CODEC.fieldOf("part_model").forGetter(model -> model.partModel),
+            Direction.CODEC.fieldOf("direction").forGetter(model -> model.direction)
         ).apply(instance, CablePartUnbakedBlockStateModel::new));
 
     private final DyeColor color;
     private final Identifier partModel;
+    private final Direction direction;
     private final Identifier coreModel;
     private final Identifier extensionModel;
 
-    public CablePartUnbakedBlockStateModel(final DyeColor color, final Identifier partModel) {
+    public CablePartUnbakedBlockStateModel(final DyeColor color, final Identifier partModel,
+                                             final Direction direction) {
         this.color = color;
         this.partModel = partModel;
+        this.direction = direction;
         this.coreModel = createIdentifier("block/cable/core/" + color.getName());
         this.extensionModel = createIdentifier("block/cable/extension/" + color.getName());
     }
@@ -37,9 +41,7 @@ public class CablePartUnbakedBlockStateModel implements CustomUnbakedBlockStateM
         resolver.markDependency(extensionModel);
         resolver.markDependency(partModel);
     }
-
-    @Override
-    public MapCodec<? extends CustomUnbakedBlockStateModel> codec() {
+    public MapCodec<? extends BlockStateModel.Unbaked> codec() {
         return MODEL_CODEC;
     }
 
@@ -51,6 +53,7 @@ public class CablePartUnbakedBlockStateModel implements CustomUnbakedBlockStateM
             new Material(createIdentifier("block/cable/" + color.getName())),
             debugName
         );
-        return new CableBlockStateModel(particleMaterial, modelBaker, color, new SimpleCablePart(partModel));
+        return new CableBlockStateModel(particleMaterial, modelBaker, color,
+            new SimpleCablePart(direction, partModel));
     }
 }

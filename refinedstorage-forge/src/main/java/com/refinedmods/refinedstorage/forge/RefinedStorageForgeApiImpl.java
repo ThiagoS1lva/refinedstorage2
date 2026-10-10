@@ -7,23 +7,17 @@ import com.refinedmods.refinedstorage.forge.api.RefinedStorageForgeApi;
 import com.refinedmods.refinedstorage.forge.api.ResourceHandlerExternalPatternSinkStrategyFactory;
 import com.refinedmods.refinedstorage.forge.autocrafting.ResourceHandlerPatternProviderExternalPatternSinkFactory;
 
-import net.minecraft.core.Direction;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import org.jspecify.annotations.Nullable;
-
-import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 
 public class RefinedStorageForgeApiImpl implements RefinedStorageForgeApi {
-    private final BlockCapability<NetworkNodeContainerProvider, @Nullable Direction>
-        networkNodeContainerProviderCapability = BlockCapability.create(
-        createIdentifier("network_node_container_provider"),
-        NetworkNodeContainerProvider.class,
-        Direction.class
-    );
+    private final Capability<NetworkNodeContainerProvider> networkNodeContainerProviderCapability =
+        CapabilityManager.get(new CapabilityToken<NetworkNodeContainerProvider>() {
+        });
 
     @Override
-    public BlockCapability<NetworkNodeContainerProvider,
-        @Nullable Direction> getNetworkNodeContainerProviderCapability() {
+    public Capability<NetworkNodeContainerProvider> getNetworkNodeContainerProviderCapability() {
         return networkNodeContainerProviderCapability;
     }
 

@@ -7,27 +7,29 @@ import com.refinedmods.refinedstorage.common.api.grid.strategy.GridExtractionStr
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
-import com.refinedmods.refinedstorage.forge.storage.ResourceHandlerInsertableStorage;
-import com.refinedmods.refinedstorage.forge.storage.StaticResourceHandlerProvider;
-import com.refinedmods.refinedstorage.forge.support.resource.VariantUtil;
+import com.refinedmods.refinedstorage.forge.storage.ItemHandlerStorage;
+import com.refinedmods.refinedstorage.forge.support.inventory.CarriedSlotItemHandler;
+
+import java.util.function.Supplier;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.CarriedSlotWrapper;
-import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class ItemGridExtractionStrategy implements GridExtractionStrategy {
     private final GridOperations gridOperations;
-    private final ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> playerInventory;
-    private final ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> playerCursor;
+    private final Supplier<IItemHandler> playerInventory;
+    private final Supplier<IItemHandler> playerCursor;
 
     public ItemGridExtractionStrategy(final AbstractContainerMenu containerMenu,
                                       final ServerPlayer player,
                                       final Grid grid) {
         this.gridOperations = grid.createOperations(ResourceTypes.ITEM, player);
-        this.playerInventory = PlayerInventoryWrapper.of(player);
-        this.playerCursor = CarriedSlotWrapper.of(containerMenu);
+        final Inventory inventory = player.getInventory();
+        this.playerInventory = () -> new InvWrapper(inventory);
+        this.playerCursor = () -> new CarriedSlotItemHandler(containerMenu);
     }
 
     @Override
@@ -35,16 +37,10 @@ public class ItemGridExtractionStrategy implements GridExtractionStrategy {
                              final GridExtractMode extractMode,
                              final boolean cursor) {
         if (resource instanceof ItemResource itemResource) {
-            final ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> handler = cursor
-                ? playerCursor
-                : playerInventory;
             gridOperations.extract(
                 itemResource,
                 extractMode,
-                new ResourceHandlerInsertableStorage<>(new StaticResourceHandlerProvider<>(
-                    handler,
-                    VariantUtil::ofPlatform
-                ), VariantUtil::optionalItemToPlatform)
+                new ItemHandlerStorage(cursor ? playerCursor : playerInventory)
             );
             return true;
         }

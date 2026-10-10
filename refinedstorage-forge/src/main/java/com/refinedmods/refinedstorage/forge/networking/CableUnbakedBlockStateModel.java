@@ -8,11 +8,10 @@ import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
-import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-public class CableUnbakedBlockStateModel implements CustomUnbakedBlockStateModel {
+public class CableUnbakedBlockStateModel implements BlockStateModel.Unbaked {
     public static final MapCodec<CableUnbakedBlockStateModel> MODEL_CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
             DyeColor.CODEC.fieldOf("color").forGetter(model -> model.color)
@@ -33,9 +32,7 @@ public class CableUnbakedBlockStateModel implements CustomUnbakedBlockStateModel
         resolver.markDependency(coreModel);
         resolver.markDependency(extensionModel);
     }
-
-    @Override
-    public MapCodec<? extends CustomUnbakedBlockStateModel> codec() {
+    public MapCodec<? extends BlockStateModel.Unbaked> codec() {
         return MODEL_CODEC;
     }
 

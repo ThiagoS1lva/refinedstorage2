@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.forge.support.render.ModelProperties;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 public class ForgeImporterBlockEntity extends AbstractImporterBlockEntity {
     public ForgeImporterBlockEntity(final BlockPos pos, final BlockState state) {

@@ -1,37 +1,46 @@
 package com.refinedmods.refinedstorage.forge.networking;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
-import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-public class ActiveInactiveCablePartUnbakedBlockStateModel implements CustomUnbakedBlockStateModel {
+public class ActiveInactiveCablePartUnbakedBlockStateModel implements BlockStateModel.Unbaked {
     public static final MapCodec<ActiveInactiveCablePartUnbakedBlockStateModel> MODEL_CODEC =
         RecordCodecBuilder.mapCodec(instance -> instance.group(
             DyeColor.CODEC.fieldOf("color").forGetter(model -> model.color),
             Identifier.CODEC.fieldOf("active_part_model").forGetter(model -> model.activePartModel),
-            Identifier.CODEC.fieldOf("inactive_part_model").forGetter(model -> model.inactivePartModel)
+            Identifier.CODEC.fieldOf("inactive_part_model").forGetter(model -> model.inactivePartModel),
+            Direction.CODEC.fieldOf("direction").forGetter(model -> model.direction),
+            Codec.BOOL.fieldOf("active").forGetter(model -> model.active)
         ).apply(instance, ActiveInactiveCablePartUnbakedBlockStateModel::new));
 
     private final DyeColor color;
     private final Identifier activePartModel;
     private final Identifier inactivePartModel;
+    private final Direction direction;
+    private final boolean active;
     private final Identifier coreModel;
     private final Identifier extensionModel;
 
     public ActiveInactiveCablePartUnbakedBlockStateModel(final DyeColor color,
                                                          final Identifier activePartModel,
-                                                         final Identifier inactivePartModel) {
+                                                         final Identifier inactivePartModel,
+                                                         final Direction direction,
+                                                         final boolean active) {
         this.color = color;
         this.activePartModel = activePartModel;
         this.inactivePartModel = inactivePartModel;
+        this.direction = direction;
+        this.active = active;
         this.coreModel = createIdentifier("block/cable/core/" + color.getName());
         this.extensionModel = createIdentifier("block/cable/extension/" + color.getName());
     }
@@ -43,9 +52,7 @@ public class ActiveInactiveCablePartUnbakedBlockStateModel implements CustomUnba
         resolver.markDependency(activePartModel);
         resolver.markDependency(inactivePartModel);
     }
-
-    @Override
-    public MapCodec<? extends CustomUnbakedBlockStateModel> codec() {
+    public MapCodec<? extends BlockStateModel.Unbaked> codec() {
         return MODEL_CODEC;
     }
 
@@ -58,6 +65,6 @@ public class ActiveInactiveCablePartUnbakedBlockStateModel implements CustomUnba
             debugName
         );
         return new CableBlockStateModel(particleMaterial, modelBaker, color,
-            new ActiveInactiveCablePart(activePartModel, inactivePartModel));
+            new ActiveInactiveCablePart(direction, active, activePartModel, inactivePartModel));
     }
 }

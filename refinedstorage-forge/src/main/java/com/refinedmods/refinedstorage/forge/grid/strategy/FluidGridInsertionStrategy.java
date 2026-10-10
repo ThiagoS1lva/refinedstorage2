@@ -7,55 +7,59 @@ import com.refinedmods.refinedstorage.common.api.grid.Grid;
 import com.refinedmods.refinedstorage.common.api.grid.strategy.GridInsertionStrategy;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
+import com.refinedmods.refinedstorage.forge.support.resource.VariantUtil;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.access.ItemAccess;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
-
-import static com.refinedmods.refinedstorage.forge.support.resource.VariantUtil.ofPlatform;
-import static com.refinedmods.refinedstorage.forge.support.resource.VariantUtil.toPlatform;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public class FluidGridInsertionStrategy implements GridInsertionStrategy {
     private final AbstractContainerMenu menu;
-    private final ServerPlayer player;
     private final GridOperations gridOperations;
 
     public FluidGridInsertionStrategy(final AbstractContainerMenu menu, final ServerPlayer player, final Grid grid) {
         this.menu = menu;
-        this.player = player;
         this.gridOperations = grid.createOperations(ResourceTypes.FLUID, player);
     }
 
     @Override
     public boolean onInsert(final GridInsertMode insertMode, final boolean tryAlternatives) {
-        final ItemAccess itemAccess = ItemAccess.forPlayerCursor(player, menu);
-        final ResourceHandler<net.neoforged.neoforge.transfer.fluid.FluidResource> playerCursor =
-            menu.getCarried().getCapability(Capabilities.Fluid.ITEM, itemAccess);
-        if (playerCursor == null) {
+        final ItemStack carried = menu.getCarried();
+        if (carried.isEmpty()) {
             return false;
         }
-        final net.neoforged.neoforge.transfer.fluid.FluidResource extractableFluid =
-            ResourceHandlerUtil.findExtractableResource(playerCursor, r -> true, null);
-        if (extractableFluid == null) {
+        final IFluidHandlerItem probe = FluidUtil.getFluidHandler(carried.copy()).resolve().orElse(null);
+        if (probe == null) {
             return false;
         }
-        final FluidResource fluidResource = ofPlatform(extractableFluid);
-        gridOperations.insert(fluidResource, insertMode, (resource, amount, action, source) -> {
+        final FluidStack available = probe.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+        if (available.isEmpty() || available.hasTag()) {
+            return false;
+        }
+        final FluidResource fluidResource = VariantUtil.ofFluidStack(available);
+        gridOperations.insert(fluidResource, insertMode, (resource, amount, action, actor) -> {
             if (!(resource instanceof FluidResource fluidResource2)) {
                 return 0;
             }
-            final net.neoforged.neoforge.transfer.fluid.FluidResource platformFluid = toPlatform(fluidResource2);
-            try (Transaction tx = Transaction.openRoot()) {
-                final long extracted = playerCursor.extract(platformFluid, (int) amount, tx);
-                if (action == Action.EXECUTE) {
-                    tx.commit();
-                }
-                return extracted;
+            final boolean simulate = action == Action.SIMULATE;
+            final ItemStack live = menu.getCarried();
+            final IFluidHandlerItem handler = FluidUtil.getFluidHandler(simulate ? live.copy() : live)
+                .resolve().orElse(null);
+            if (handler == null) {
+                return 0;
             }
+            final FluidStack drained = handler.drain(
+                VariantUtil.toFluidStack(fluidResource2, (int) Math.min(amount, Integer.MAX_VALUE)),
+                simulate ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE
+            );
+            if (!simulate && !drained.isEmpty()) {
+                menu.setCarried(handler.getContainer());
+            }
+            return drained.getAmount();
         });
         return true;
     }

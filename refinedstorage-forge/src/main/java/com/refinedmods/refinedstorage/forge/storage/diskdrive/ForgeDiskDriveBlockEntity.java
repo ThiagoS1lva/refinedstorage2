@@ -5,8 +5,8 @@ import com.refinedmods.refinedstorage.common.storage.diskdrive.AbstractDiskDrive
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.model.data.ModelData;
-import net.neoforged.neoforge.model.data.ModelProperty;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelProperty;
 
 public class ForgeDiskDriveBlockEntity extends AbstractDiskDriveBlockEntity {
     public static final ModelProperty<Disk[]> DISKS_PROPERTY = new ModelProperty<>();

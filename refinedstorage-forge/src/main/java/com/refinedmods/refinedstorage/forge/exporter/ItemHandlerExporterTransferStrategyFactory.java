@@ -10,41 +10,25 @@ import com.refinedmods.refinedstorage.common.api.storage.root.FuzzyRootStorage;
 import com.refinedmods.refinedstorage.common.api.upgrade.UpgradeState;
 import com.refinedmods.refinedstorage.common.content.Items;
 import com.refinedmods.refinedstorage.common.exporter.ExporterTransferQuotaProvider;
-import com.refinedmods.refinedstorage.forge.storage.CapabilityCacheResourceHandlerProvider;
-import com.refinedmods.refinedstorage.forge.storage.ResourceHandlerInsertableStorage;
+import com.refinedmods.refinedstorage.forge.storage.ItemHandlerStorage;
+import com.refinedmods.refinedstorage.forge.support.CapabilityUtil;
 
-import java.util.function.Function;
 import java.util.function.ToLongFunction;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.resource.Resource;
-import org.jspecify.annotations.Nullable;
 
 import static com.refinedmods.refinedstorage.api.network.impl.node.exporter.MissingResourcesListeningExporterTransferStrategy.OnMissingResources.scheduleAutocrafting;
 
-public class ResourceHandlerExporterTransferStrategyFactory<T extends Resource>
-    implements ExporterTransferStrategyFactory {
+public class ItemHandlerExporterTransferStrategyFactory implements ExporterTransferStrategyFactory {
     private final long singleAmount;
     private final Class<? extends ResourceKey> resourceKeyType;
-    private final Function<ResourceKey, @Nullable T> toPlatformMapper;
-    private final Function<T, ResourceKey> fromPlatformMapper;
-    private final BlockCapability<ResourceHandler<T>, @Nullable Direction> capability;
 
-    public ResourceHandlerExporterTransferStrategyFactory(final long singleAmount,
-                                                          final Class<? extends ResourceKey> resourceKeyType,
-                                                          final Function<ResourceKey, @Nullable T> toPlatformMapper,
-                                                          final Function<T, ResourceKey> fromPlatformMapper,
-                                                          final BlockCapability<ResourceHandler<T>, @Nullable Direction>
-                                                              capability) {
+    public ItemHandlerExporterTransferStrategyFactory(final long singleAmount,
+                                                      final Class<? extends ResourceKey> resourceKeyType) {
         this.singleAmount = singleAmount;
         this.resourceKeyType = resourceKeyType;
-        this.toPlatformMapper = toPlatformMapper;
-        this.fromPlatformMapper = fromPlatformMapper;
-        this.capability = capability;
     }
 
     @Override
@@ -58,16 +42,8 @@ public class ResourceHandlerExporterTransferStrategyFactory<T extends Resource>
                                            final Direction direction,
                                            final UpgradeState upgradeState,
                                            final boolean fuzzyMode) {
-        final CapabilityCacheResourceHandlerProvider<T> provider = new CapabilityCacheResourceHandlerProvider<>(
-            level,
-            pos,
-            direction,
-            capability,
-            fromPlatformMapper
-        );
-        final ResourceHandlerInsertableStorage<T> destination = new ResourceHandlerInsertableStorage<>(
-            provider,
-            toPlatformMapper
+        final ItemHandlerStorage destination = new ItemHandlerStorage(
+            () -> CapabilityUtil.getItemHandler(level, pos, direction)
         );
         final ExporterTransferStrategy strategy = create(
             fuzzyMode,

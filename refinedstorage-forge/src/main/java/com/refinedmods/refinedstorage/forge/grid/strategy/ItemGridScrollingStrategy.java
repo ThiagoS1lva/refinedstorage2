@@ -11,66 +11,61 @@ import com.refinedmods.refinedstorage.common.api.grid.strategy.GridScrollingStra
 import com.refinedmods.refinedstorage.common.api.support.resource.PlatformResourceKey;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import com.refinedmods.refinedstorage.common.support.resource.ResourceTypes;
-import com.refinedmods.refinedstorage.forge.storage.ResourceHandlerExtractableStorage;
-import com.refinedmods.refinedstorage.forge.storage.ResourceHandlerInsertableStorage;
-import com.refinedmods.refinedstorage.forge.storage.StaticResourceHandlerProvider;
-import com.refinedmods.refinedstorage.forge.support.resource.VariantUtil;
+import com.refinedmods.refinedstorage.forge.storage.ItemHandlerStorage;
+import com.refinedmods.refinedstorage.forge.support.inventory.CarriedSlotItemHandler;
+import com.refinedmods.refinedstorage.forge.support.inventory.SingleSlotItemHandler;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.neoforged.neoforge.transfer.RangedResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.CarriedSlotWrapper;
-import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class ItemGridScrollingStrategy implements GridScrollingStrategy {
+    private final AbstractContainerMenu containerMenu;
+    private final Inventory playerInventory;
     private final GridOperations gridOperations;
-    private final ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> playerInventory;
-    private final ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> playerCursor;
 
     public ItemGridScrollingStrategy(final AbstractContainerMenu containerMenu,
                                      final ServerPlayer player,
                                      final Grid grid) {
+        this.containerMenu = containerMenu;
+        this.playerInventory = player.getInventory();
         this.gridOperations = grid.createOperations(ResourceTypes.ITEM, player);
-        this.playerInventory = PlayerInventoryWrapper.of(player);
-        this.playerCursor = CarriedSlotWrapper.of(containerMenu);
     }
 
     @Override
     public boolean onScroll(final PlatformResourceKey resource, final GridScrollMode scrollMode, final int slotIndex) {
         if (resource instanceof ItemResource itemResource) {
-            final ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> playerStorage = slotIndex >= 0
-                ? RangedResourceHandler.ofSingleIndex(playerInventory, slotIndex)
-                : playerInventory;
             switch (scrollMode) {
-                case GRID_TO_INVENTORY -> handleGridToInventoryScroll(itemResource, playerStorage);
-                case INVENTORY_TO_GRID -> handleInventoryToGridScroll(itemResource, playerStorage);
-                case GRID_TO_CURSOR -> handleGridToInventoryScroll(itemResource, playerCursor);
+                case GRID_TO_INVENTORY -> handleGridToInventoryScroll(
+                    itemResource,
+                    slotIndex >= 0
+                        ? new ItemHandlerStorage(() -> new SingleSlotItemHandler(playerInventory, slotIndex))
+                        : new ItemHandlerStorage(() -> new InvWrapper(playerInventory))
+                );
+                case INVENTORY_TO_GRID -> handleInventoryToGridScroll(
+                    itemResource,
+                    slotIndex >= 0
+                        ? new ItemHandlerStorage(() -> new SingleSlotItemHandler(playerInventory, slotIndex))
+                        : new ItemHandlerStorage(() -> new InvWrapper(playerInventory))
+                );
+                case GRID_TO_CURSOR -> handleGridToInventoryScroll(
+                    itemResource,
+                    new ItemHandlerStorage(() -> new CarriedSlotItemHandler(containerMenu))
+                );
             }
             return true;
         }
         return false;
     }
 
-    private void handleInventoryToGridScroll(
-        final ItemResource itemResource,
-        final ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> handler
-    ) {
-        final ExtractableStorage extractableStorage = new ResourceHandlerExtractableStorage<>(
-            new StaticResourceHandlerProvider<>(handler, VariantUtil::ofPlatform),
-            VariantUtil::optionalItemToPlatform
-        );
+    private void handleInventoryToGridScroll(final ItemResource itemResource,
+                                             final ExtractableStorage extractableStorage) {
         gridOperations.insert(itemResource, GridInsertMode.SINGLE_RESOURCE, extractableStorage);
     }
 
-    private void handleGridToInventoryScroll(
-        final ItemResource itemResource,
-        final ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> handler
-    ) {
-        final InsertableStorage insertableStorage = new ResourceHandlerInsertableStorage<>(
-            new StaticResourceHandlerProvider<>(handler, VariantUtil::ofPlatform),
-            VariantUtil::optionalItemToPlatform
-        );
+    private void handleGridToInventoryScroll(final ItemResource itemResource,
+                                             final InsertableStorage insertableStorage) {
         gridOperations.extract(itemResource, GridExtractMode.SINGLE_RESOURCE, insertableStorage);
     }
 }

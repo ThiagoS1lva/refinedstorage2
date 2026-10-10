@@ -10,7 +10,6 @@ import com.refinedmods.refinedstorage.common.api.grid.view.GridResourceType;
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemContext;
 import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.resource.FluidOperationResult;
-import com.refinedmods.refinedstorage.common.support.RecipeMapRecipeProvider;
 import com.refinedmods.refinedstorage.common.support.RecipeProvider;
 import com.refinedmods.refinedstorage.common.support.containermenu.TransferManager;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
@@ -21,18 +20,21 @@ import com.refinedmods.refinedstorage.forge.autocrafting.ResourceHandlerPatternP
 import com.refinedmods.refinedstorage.forge.grid.strategy.ItemGridInsertionStrategy;
 import com.refinedmods.refinedstorage.forge.grid.view.ForgeFluidGridResourceType;
 import com.refinedmods.refinedstorage.forge.grid.view.ForgeItemGridResourceType;
+import com.refinedmods.refinedstorage.forge.support.CapabilityUtil;
+import com.refinedmods.refinedstorage.forge.support.FakePlayerFactory;
 import com.refinedmods.refinedstorage.forge.support.containermenu.ContainerTransferDestination;
 import com.refinedmods.refinedstorage.forge.support.containermenu.MenuOpenerImpl;
-import com.refinedmods.refinedstorage.forge.support.energy.EnergyItemContextItemAccess;
 import com.refinedmods.refinedstorage.forge.support.energy.EnergyStorageEnergyHandlerAdapter;
+import com.refinedmods.refinedstorage.forge.support.energy.StackEnergyItemContext;
 import com.refinedmods.refinedstorage.forge.support.render.FluidStackFluidRenderer;
-import com.refinedmods.refinedstorage.forge.support.resource.SimpleItemStackResourceHandler;
+import com.refinedmods.refinedstorage.forge.support.resource.VariantUtil;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
@@ -61,6 +63,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -70,29 +77,25 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.access.ItemAccess;
-import net.neoforged.neoforge.transfer.fluid.FluidUtil;
-import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.Result;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jspecify.annotations.Nullable;
 
-import static com.refinedmods.refinedstorage.forge.support.resource.VariantUtil.ofPlatform;
-import static com.refinedmods.refinedstorage.forge.support.resource.VariantUtil.toPlatform;
+import static com.refinedmods.refinedstorage.forge.support.resource.VariantUtil.ofFluidStack;
+import static com.refinedmods.refinedstorage.forge.support.resource.VariantUtil.toFluidStack;
 import static java.util.Objects.requireNonNull;
 
 public final class PlatformImpl extends AbstractPlatform {
@@ -102,9 +105,9 @@ public final class PlatformImpl extends AbstractPlatform {
     private final PatternProviderExternalPatternSinkFactory patternProviderExternalPatternSinkFactory =
         new ResourceHandlerPatternProviderExternalPatternSinkFactory();
 
-    public PlatformImpl(final ModContainer modContainer) {
+    public PlatformImpl(final FMLJavaModLoadingContext context) {
         super(new MenuOpenerImpl(), new FluidStackFluidRenderer(), ItemGridInsertionStrategy::new);
-        modContainer.registerConfig(ModConfig.Type.COMMON, config.getSpec());
+        context.registerConfig(ModConfig.Type.COMMON, config.getSpec());
     }
 
     @Override
@@ -124,10 +127,7 @@ public final class PlatformImpl extends AbstractPlatform {
 
     @Override
     public boolean isKeyDown(final KeyMapping keyMapping) {
-        return !keyMapping.isUnbound() && InputConstants.isKeyDown(
-            Minecraft.getInstance().getWindow(),
-            keyMapping.getKey().getValue()
-        );
+        return !keyMapping.isUnbound() && InputConstants.isKeyDown(keyMapping.getKey().getValue());
     }
 
     @Override
@@ -135,21 +135,21 @@ public final class PlatformImpl extends AbstractPlatform {
         if (container.isEmpty()) {
             return Optional.empty();
         }
-        final SimpleItemStackResourceHandler interceptingHandler = SimpleItemStackResourceHandler.forStack(container);
-        final ResourceHandler<net.neoforged.neoforge.transfer.fluid.FluidResource> source =
-            container.getCapability(Capabilities.Fluid.ITEM, ItemAccess.forHandlerIndex(interceptingHandler, 0));
-        try (Transaction tx = Transaction.openRoot()) {
-            final var extracted = ResourceHandlerUtil.extractFirst(source, r -> true, Integer.MAX_VALUE,
-                tx);
-            if (extracted == null) {
-                return Optional.empty();
-            }
-            return Optional.of(new FluidOperationResult(
-                interceptingHandler.getStack(),
-                ofPlatform(extracted.resource()),
-                extracted.amount()
-            ));
+        final ItemStack copy = container.copy();
+        final IFluidHandlerItem handler = FluidUtil.getFluidHandler(copy).resolve().orElse(null);
+        if (handler == null) {
+            return Optional.empty();
         }
+        final FluidStack simulated = handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+        if (simulated.isEmpty()) {
+            return Optional.empty();
+        }
+        final FluidStack drained = handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE);
+        return Optional.of(new FluidOperationResult(
+            handler.getContainer(),
+            ofFluidStack(drained),
+            drained.getAmount()
+        ));
     }
 
     @Override
@@ -158,20 +158,16 @@ public final class PlatformImpl extends AbstractPlatform {
         if (!(resourceAmount.resource() instanceof FluidResource fluidResource)) {
             return Optional.empty();
         }
-        final SimpleItemStackResourceHandler interceptingHandler = SimpleItemStackResourceHandler.forStack(container);
-        final ResourceHandler<net.neoforged.neoforge.transfer.fluid.FluidResource> storage =
-            container.getCapability(Capabilities.Fluid.ITEM, ItemAccess.forHandlerIndex(interceptingHandler, 0));
-        if (storage == null) {
+        final ItemStack copy = container.copy();
+        final IFluidHandlerItem handler = FluidUtil.getFluidHandler(copy).resolve().orElse(null);
+        if (handler == null) {
             return Optional.empty();
         }
-        try (Transaction tx = Transaction.openRoot()) {
-            final long inserted = storage.insert(toPlatform(fluidResource), (int) resourceAmount.amount(), tx);
-            return Optional.of(new FluidOperationResult(
-                interceptingHandler.getStack(),
-                fluidResource,
-                inserted
-            ));
-        }
+        final int filled = handler.fill(
+            toFluidStack(fluidResource, (int) Math.min(resourceAmount.amount(), Integer.MAX_VALUE)),
+            IFluidHandler.FluidAction.EXECUTE
+        );
+        return Optional.of(new FluidOperationResult(handler.getContainer(), fluidResource, filled));
     }
 
     @Override
@@ -184,16 +180,16 @@ public final class PlatformImpl extends AbstractPlatform {
                                     final ItemResource itemResource,
                                     final long amount,
                                     final Action action) {
-        final ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> wrapper =
-            VanillaContainerWrapper.of(container);
-        final net.neoforged.neoforge.transfer.item.ItemResource platformResource = toPlatform(itemResource);
-        try (Transaction tx = Transaction.openRoot()) {
-            final long inserted = wrapper.insert(platformResource, (int) amount, tx);
-            if (inserted > 0 && action == Action.EXECUTE) {
-                tx.commit();
-            }
-            return inserted;
+        final InvWrapper wrapper = new InvWrapper(container);
+        final boolean simulate = action == Action.SIMULATE;
+        ItemStack toInsert = VariantUtil.toItemStack(itemResource, (int) Math.min(amount, Integer.MAX_VALUE));
+        long inserted = 0L;
+        for (int i = 0; i < wrapper.getSlots() && !toInsert.isEmpty(); ++i) {
+            final ItemStack remainder = wrapper.insertItem(i, toInsert, simulate);
+            inserted += toInsert.getCount() - remainder.getCount();
+            toInsert = remainder;
         }
+        return inserted;
     }
 
     @Override
@@ -201,23 +197,22 @@ public final class PlatformImpl extends AbstractPlatform {
                                        final Level level,
                                        final BlockHitResult hitResult,
                                        final Player player) {
-        return state.getCloneItemStack(hitResult.getBlockPos(), level, false, player);
+        return state.getCloneItemStack(level, hitResult.getBlockPos(), false);
     }
 
     @Override
-    @SuppressWarnings("DataFlowIssue") // NeoForge allows null
     public NonNullList<ItemStack> getRemainingCraftingItems(final Player player,
                                                             final CraftingRecipe craftingRecipe,
                                                             final CraftingInput input) {
-        CommonHooks.setCraftingPlayer(player);
+        ForgeHooks.setCraftingPlayer(player);
         final NonNullList<ItemStack> remainingItems = craftingRecipe.getRemainingItems(input);
-        CommonHooks.setCraftingPlayer(null);
+        ForgeHooks.setCraftingPlayer(null);
         return remainingItems;
     }
 
     @Override
     public void onItemCrafted(final Player player, final ItemStack craftedStack, final CraftingContainer container) {
-        EventHooks.firePlayerCraftingEvent(player, craftedStack, container);
+        ForgeEventFactory.firePlayerCraftingEvent(player, craftedStack, container);
     }
 
     @Override
@@ -230,8 +225,8 @@ public final class PlatformImpl extends AbstractPlatform {
 
     @Override
     public boolean canBreakBlock(final Level level, final BlockPos pos, final BlockState state, final Player player) {
-        final BreakBlockEvent e = new BreakBlockEvent(level, pos, state, player);
-        return !NeoForge.EVENT_BUS.post(e).isCanceled();
+        final BlockEvent.BreakEvent e = new BlockEvent.BreakEvent(level, pos, state, player, Result.DEFAULT);
+        return !BlockEvent.BreakEvent.BUS.post(e);
     }
 
     @Override
@@ -249,7 +244,7 @@ public final class PlatformImpl extends AbstractPlatform {
             stack,
             new BlockHitResult(Vec3.ZERO, direction, pos, false)
         );
-        final InteractionResult result = CommonHooks.onPlaceItemIntoWorld(ctx);
+        final InteractionResult result = ForgeHooks.onPlaceItemIntoWorld(ctx);
         return result.consumesAction();
     }
 
@@ -264,8 +259,52 @@ public final class PlatformImpl extends AbstractPlatform {
         if (level.getBlockState(pos).getFluidState().isSource()) {
             return false;
         }
-        final net.neoforged.neoforge.transfer.fluid.FluidResource platformResource = toPlatform(fluidResource);
-        return FluidUtil.tryPlaceFluid(platformResource, player, level, InteractionHand.MAIN_HAND, pos);
+        final FluidStack fluid = toFluidStack(fluidResource, FluidType.BUCKET_VOLUME);
+        final IFluidHandler source = new IFluidHandler() {
+            @Override
+            public int getTanks() {
+                return 1;
+            }
+
+            @Override
+            public FluidStack getFluidInTank(final int tank) {
+                return fluid.copy();
+            }
+
+            @Override
+            public int getTankCapacity(final int tank) {
+                return fluid.getAmount();
+            }
+
+            @Override
+            public boolean isFluidValid(final int tank, final FluidStack stack) {
+                return false;
+            }
+
+            @Override
+            public int fill(final FluidStack resource, final FluidAction action) {
+                return 0;
+            }
+
+            @Override
+            public FluidStack drain(final FluidStack resource, final FluidAction action) {
+                if (resource.isEmpty() || !resource.isFluidEqual(fluid)) {
+                    return FluidStack.EMPTY;
+                }
+                final int taking = Math.min(resource.getAmount(), fluid.getAmount());
+                final FluidStack result = fluid.copy();
+                result.setAmount(taking);
+                return result;
+            }
+
+            @Override
+            public FluidStack drain(final int maxDrain, final FluidAction action) {
+                final FluidStack result = fluid.copy();
+                result.setAmount(Math.min(maxDrain, fluid.getAmount()));
+                return result;
+            }
+        };
+        return FluidUtil.tryPlaceFluid(player, level, InteractionHand.MAIN_HAND, pos, source, fluid);
     }
 
     @Override
@@ -275,13 +314,7 @@ public final class PlatformImpl extends AbstractPlatform {
                                          final LevelReader level,
                                          final BlockPos position,
                                          final Player player) {
-        return block.getCloneItemStack(
-            level,
-            position,
-            state,
-            false,
-            player
-        );
+        return state.getCloneItemStack(level, position, false);
     }
 
     @Override
@@ -297,7 +330,7 @@ public final class PlatformImpl extends AbstractPlatform {
         final Optional<TooltipComponent> imageComponent,
         final List<Component> components
     ) {
-        return new ArrayList<>(ClientHooks.gatherTooltipComponents(
+        return new ArrayList<>(ForgeHooksClient.gatherTooltipComponents(
             stack,
             components,
             imageComponent,
@@ -310,8 +343,7 @@ public final class PlatformImpl extends AbstractPlatform {
 
     @Override
     public Optional<EnergyStorage> getEnergyStorage(final ItemStack stack, final EnergyItemContext context) {
-        return Optional.ofNullable(stack.getCapability(Capabilities.Energy.ITEM,
-                new EnergyItemContextItemAccess(context)))
+        return stack.getCapability(ForgeCapabilities.ENERGY).resolve()
             .filter(EnergyStorageEnergyHandlerAdapter.class::isInstance)
             .map(EnergyStorageEnergyHandlerAdapter.class::cast)
             .map(EnergyStorageEnergyHandlerAdapter::getEnergyStorage);
@@ -319,12 +351,12 @@ public final class PlatformImpl extends AbstractPlatform {
 
     @Override
     public <T extends CustomPacketPayload> void sendPacketToServer(final T packet) {
-        ClientPacketDistributor.sendToServer(packet);
+        ModInitializer.CHANNEL.send(packet, net.minecraftforge.network.PacketDistributor.SERVER.with(null));
     }
 
     @Override
     public <T extends CustomPacketPayload> void sendPacketToClient(final ServerPlayer player, final T packet) {
-        PacketDistributor.sendToPlayer(player, packet);
+        ModInitializer.CHANNEL.send(packet, net.minecraftforge.network.PacketDistributor.PLAYER.with(player));
     }
 
     @Override
@@ -332,15 +364,11 @@ public final class PlatformImpl extends AbstractPlatform {
     public NetworkNodeContainerProvider getContainerProvider(final Level level,
                                                              final BlockPos pos,
                                                              @Nullable final Direction direction) {
-        return level.getCapability(
-            RefinedStorageForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),
-            pos,
-            direction
-        );
+        return CapabilityUtil.getContainerProvider(level, pos, direction);
     }
 
-    @Nullable
     @Override
+    @Nullable
     public NetworkNodeContainerProvider getContainerProviderSafely(final Level level,
                                                                    final BlockPos pos,
                                                                    @Nullable final Direction direction) {
@@ -364,13 +392,10 @@ public final class PlatformImpl extends AbstractPlatform {
         if (safeBlockEntity == null) {
             return null;
         }
-        return level.getCapability(
+        return safeBlockEntity.getCapability(
             RefinedStorageForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),
-            pos,
-            null,
-            safeBlockEntity,
             direction
-        );
+        ).resolve().orElse(null);
     }
 
     @Override
@@ -406,7 +431,21 @@ public final class PlatformImpl extends AbstractPlatform {
     @Override
     public RecipeProvider getClientRecipeProvider(final Level level) {
         if (!level.isClientSide()) {
-            return new RecipeMapRecipeProvider(requireNonNull(level.getServer()).getRecipeManager().recipeMap());
+            final RecipeManager recipeManager = requireNonNull(level.getServer()).getRecipeManager();
+            return new RecipeProvider() {
+                @Override
+                @SuppressWarnings("unchecked")
+                public <I extends RecipeInput, T extends Recipe<I>> Stream<RecipeHolder<T>> getRecipesFor(
+                    final RecipeType<T> type,
+                    final I container,
+                    final Level level
+                ) {
+                    return recipeManager.getRecipes().stream()
+                        .filter(holder -> holder.value().getType() == type)
+                        .map(holder -> (RecipeHolder<T>) holder)
+                        .filter(holder -> holder.value().matches(container, level));
+                }
+            };
         }
         if (clientRecipeProvider == null) {
             throw new RuntimeException("Recipe provider is not synced yet");

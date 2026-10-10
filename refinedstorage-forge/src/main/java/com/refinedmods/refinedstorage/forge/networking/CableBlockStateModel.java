@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.math.OctahedralGroup;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
@@ -15,13 +14,11 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.SimpleModelWrapper;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.sprite.Material;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import org.jspecify.annotations.Nullable;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
@@ -42,9 +39,8 @@ class CableBlockStateModel implements BlockStateModel {
     }
 
     @Override
-    public void collectParts(final BlockAndTintGetter level, final BlockPos pos, final BlockState state,
-                             final RandomSource random, final List<BlockStateModelPart> parts) {
-        final ModelData data = level.getModelData(pos);
+    public void collectParts(final RandomSource random, final List<BlockStateModelPart> parts,
+                             final ModelData data) {
         final CableConnections connections = data.get(ModelProperties.CABLE_CONNECTIONS);
         if (connections == null) {
             collectCorePart(parts);
@@ -52,7 +48,7 @@ class CableBlockStateModel implements BlockStateModel {
         }
         parts.addAll(modelBaker.compute(new SharedOperationKey(color, connections)));
         if (part != null) {
-            final ModelBaker.SharedOperationKey<BlockStateModelPart> partKey = part.getKey(state);
+            final ModelBaker.SharedOperationKey<BlockStateModelPart> partKey = part.getKey();
             if (partKey != null) {
                 parts.add(modelBaker.compute(partKey));
             }
@@ -60,7 +56,6 @@ class CableBlockStateModel implements BlockStateModel {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void collectParts(final RandomSource randomSource, final List<BlockStateModelPart> parts) {
         collectCorePart(parts);
     }

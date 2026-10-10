@@ -14,7 +14,7 @@ import com.refinedmods.refinedstorage.common.support.stretching.ScreenSize;
 import java.util.Optional;
 
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslationKey;
 
@@ -23,17 +23,17 @@ public class ConfigImpl implements Config {
     private static final String ENERGY_CAPACITY = "energyCapacity";
     private static final String OPEN_ENERGY_USAGE = "openEnergyUsage";
 
-    private final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
-    private final ModConfigSpec spec;
+    private final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+    private final ForgeConfigSpec spec;
 
-    private final ModConfigSpec.EnumValue<ScreenSize> screenSize;
-    private final ModConfigSpec.BooleanValue requireEnergy;
-    private final ModConfigSpec.BooleanValue smoothScrolling;
-    private final ModConfigSpec.BooleanValue debug;
-    private final ModConfigSpec.IntValue maxRowsStretch;
-    private final ModConfigSpec.BooleanValue searchBoxAutoSelected;
-    private final ModConfigSpec.BooleanValue autocraftingNotification;
-    private final ModConfigSpec.EnumValue<AutocraftingPreviewStyle> autocraftingPreviewStyle;
+    private final ForgeConfigSpec.EnumValue<ScreenSize> screenSize;
+    private final ForgeConfigSpec.BooleanValue requireEnergy;
+    private final ForgeConfigSpec.BooleanValue smoothScrolling;
+    private final ForgeConfigSpec.BooleanValue debug;
+    private final ForgeConfigSpec.IntValue maxRowsStretch;
+    private final ForgeConfigSpec.BooleanValue searchBoxAutoSelected;
+    private final ForgeConfigSpec.BooleanValue autocraftingNotification;
+    private final ForgeConfigSpec.EnumValue<AutocraftingPreviewStyle> autocraftingPreviewStyle;
     private final SimpleEnergyUsageEntry cable;
     private final ControllerEntry controller;
     private final DiskDriveEntry diskDrive;
@@ -134,7 +134,7 @@ public class ConfigImpl implements Config {
         spec = builder.build();
     }
 
-    public ModConfigSpec getSpec() {
+    public ForgeConfigSpec getSpec() {
         return spec;
     }
 
@@ -194,7 +194,7 @@ public class ConfigImpl implements Config {
 
     @Override
     public boolean isDebug() {
-        return debug.getAsBoolean();
+        return debug.get();
     }
 
     @Override
@@ -370,7 +370,7 @@ public class ConfigImpl implements Config {
     }
 
     private class SimpleEnergyUsageEntryImpl implements SimpleEnergyUsageEntry {
-        private final ModConfigSpec.LongValue energyUsage;
+        private final ForgeConfigSpec.LongValue energyUsage;
 
         SimpleEnergyUsageEntryImpl(final String path, final long defaultValue) {
             final String correctedPath = "interface".equals(path) ? "iface" : path;
@@ -388,7 +388,7 @@ public class ConfigImpl implements Config {
     }
 
     private class ControllerEntryImpl implements ControllerEntry {
-        private final ModConfigSpec.LongValue energyCapacity;
+        private final ForgeConfigSpec.LongValue energyCapacity;
 
         private ControllerEntryImpl() {
             builder.translation(translationKey("controller")).push("controller");
@@ -405,8 +405,8 @@ public class ConfigImpl implements Config {
     }
 
     private class DiskDriveEntryImpl implements DiskDriveEntry {
-        private final ModConfigSpec.LongValue energyUsage;
-        private final ModConfigSpec.LongValue energyUsagePerDisk;
+        private final ForgeConfigSpec.LongValue energyUsage;
+        private final ForgeConfigSpec.LongValue energyUsagePerDisk;
 
         private DiskDriveEntryImpl() {
             builder.translation(translationKey("diskDrive")).push("diskDrive");
@@ -431,8 +431,8 @@ public class ConfigImpl implements Config {
     }
 
     private class DiskInterfaceEntryImpl implements DiskInterfaceEntry {
-        private final ModConfigSpec.LongValue energyUsage;
-        private final ModConfigSpec.LongValue energyUsagePerDisk;
+        private final ForgeConfigSpec.LongValue energyUsage;
+        private final ForgeConfigSpec.LongValue energyUsagePerDisk;
 
         private DiskInterfaceEntryImpl() {
             builder.translation(translationKey("diskInterface")).push("diskInterface");
@@ -457,16 +457,16 @@ public class ConfigImpl implements Config {
     }
 
     private class GridEntryImpl implements GridEntry {
-        private final ModConfigSpec.BooleanValue largeFont;
-        private final ModConfigSpec.BooleanValue preventSortingWhileShiftIsDown;
-        private final ModConfigSpec.BooleanValue detailedTooltip;
-        private final ModConfigSpec.BooleanValue rememberSearchQuery;
-        private final ModConfigSpec.LongValue energyUsage;
-        private final ModConfigSpec.ConfigValue<String> synchronizer;
-        private final ModConfigSpec.ConfigValue<String> resourceType;
-        private final ModConfigSpec.EnumValue<SortingDirection> sortingDirection;
-        private final ModConfigSpec.EnumValue<GridSortingTypes> sortingType;
-        private final ModConfigSpec.EnumValue<GridViewType> viewType;
+        private final ForgeConfigSpec.BooleanValue largeFont;
+        private final ForgeConfigSpec.BooleanValue preventSortingWhileShiftIsDown;
+        private final ForgeConfigSpec.BooleanValue detailedTooltip;
+        private final ForgeConfigSpec.BooleanValue rememberSearchQuery;
+        private final ForgeConfigSpec.LongValue energyUsage;
+        private final ForgeConfigSpec.ConfigValue<String> synchronizer;
+        private final ForgeConfigSpec.ConfigValue<String> resourceType;
+        private final ForgeConfigSpec.EnumValue<SortingDirection> sortingDirection;
+        private final ForgeConfigSpec.EnumValue<GridSortingTypes> sortingType;
+        private final ForgeConfigSpec.EnumValue<GridViewType> viewType;
 
         GridEntryImpl() {
             builder.translation(translationKey("grid")).push("grid");
@@ -617,8 +617,8 @@ public class ConfigImpl implements Config {
     }
 
     private class CraftingGridEntryImpl implements CraftingGridEntry {
-        private final ModConfigSpec.LongValue energyUsage;
-        private final ModConfigSpec.EnumValue<CraftingGridMatrixCloseBehavior> craftingMatrixCloseBehavior;
+        private final ForgeConfigSpec.LongValue energyUsage;
+        private final ForgeConfigSpec.EnumValue<CraftingGridMatrixCloseBehavior> craftingMatrixCloseBehavior;
 
         CraftingGridEntryImpl() {
             builder.translation(translationKey("craftingGrid")).push("craftingGrid");
@@ -643,11 +643,11 @@ public class ConfigImpl implements Config {
     }
 
     private class StorageBlockEntryImpl implements StorageBlockEntry {
-        private final ModConfigSpec.LongValue oneKEnergyUsage;
-        private final ModConfigSpec.LongValue fourKEnergyUsage;
-        private final ModConfigSpec.LongValue sixteenKEnergyUsage;
-        private final ModConfigSpec.LongValue sixtyFourKEnergyUsage;
-        private final ModConfigSpec.LongValue creativeEnergyUsage;
+        private final ForgeConfigSpec.LongValue oneKEnergyUsage;
+        private final ForgeConfigSpec.LongValue fourKEnergyUsage;
+        private final ForgeConfigSpec.LongValue sixteenKEnergyUsage;
+        private final ForgeConfigSpec.LongValue sixtyFourKEnergyUsage;
+        private final ForgeConfigSpec.LongValue creativeEnergyUsage;
 
         StorageBlockEntryImpl() {
             builder.translation(translationKey("storageBlock")).push("storageBlock");
@@ -696,11 +696,11 @@ public class ConfigImpl implements Config {
     }
 
     private class FluidStorageBlockEntryImpl implements FluidStorageBlockEntry {
-        private final ModConfigSpec.LongValue sixtyFourBEnergyUsage;
-        private final ModConfigSpec.LongValue twoHundredFiftySixBEnergyUsage;
-        private final ModConfigSpec.LongValue thousandTwentyFourBEnergyUsage;
-        private final ModConfigSpec.LongValue fourThousandNinetySixBEnergyUsage;
-        private final ModConfigSpec.LongValue creativeEnergyUsage;
+        private final ForgeConfigSpec.LongValue sixtyFourBEnergyUsage;
+        private final ForgeConfigSpec.LongValue twoHundredFiftySixBEnergyUsage;
+        private final ForgeConfigSpec.LongValue thousandTwentyFourBEnergyUsage;
+        private final ForgeConfigSpec.LongValue fourThousandNinetySixBEnergyUsage;
+        private final ForgeConfigSpec.LongValue creativeEnergyUsage;
 
         FluidStorageBlockEntryImpl() {
             builder.translation(translationKey("fluidStorageBlock")).push("fluidStorageBlock");
@@ -774,17 +774,17 @@ public class ConfigImpl implements Config {
     }
 
     private class UpgradeEntryImpl implements UpgradeEntry {
-        private final ModConfigSpec.LongValue speedUpgradeEnergyUsage;
-        private final ModConfigSpec.LongValue stackUpgradeEnergyUsage;
-        private final ModConfigSpec.LongValue fortune1UpgradeEnergyUsage;
-        private final ModConfigSpec.LongValue fortune2UpgradeEnergyUsage;
-        private final ModConfigSpec.LongValue fortune3UpgradeEnergyUsage;
-        private final ModConfigSpec.LongValue silkTouchUpgradeEnergyUsage;
-        private final ModConfigSpec.LongValue regulatorUpgradeEnergyUsage;
-        private final ModConfigSpec.LongValue rangeUpgradeEnergyUsage;
-        private final ModConfigSpec.LongValue creativeRangeUpgradeEnergyUsage;
-        private final ModConfigSpec.IntValue rangeUpgradeRange;
-        private final ModConfigSpec.LongValue autocraftingUpgradeUsage;
+        private final ForgeConfigSpec.LongValue speedUpgradeEnergyUsage;
+        private final ForgeConfigSpec.LongValue stackUpgradeEnergyUsage;
+        private final ForgeConfigSpec.LongValue fortune1UpgradeEnergyUsage;
+        private final ForgeConfigSpec.LongValue fortune2UpgradeEnergyUsage;
+        private final ForgeConfigSpec.LongValue fortune3UpgradeEnergyUsage;
+        private final ForgeConfigSpec.LongValue silkTouchUpgradeEnergyUsage;
+        private final ForgeConfigSpec.LongValue regulatorUpgradeEnergyUsage;
+        private final ForgeConfigSpec.LongValue rangeUpgradeEnergyUsage;
+        private final ForgeConfigSpec.LongValue creativeRangeUpgradeEnergyUsage;
+        private final ForgeConfigSpec.IntValue rangeUpgradeRange;
+        private final ForgeConfigSpec.LongValue autocraftingUpgradeUsage;
 
         UpgradeEntryImpl() {
             builder.translation(translationKey("upgrade")).push("upgrade");
@@ -886,10 +886,10 @@ public class ConfigImpl implements Config {
     }
 
     private class WirelessGridEntryImpl implements WirelessGridEntry {
-        private final ModConfigSpec.LongValue energyCapacity;
-        private final ModConfigSpec.LongValue openEnergyUsage;
-        private final ModConfigSpec.LongValue extractEnergyUsage;
-        private final ModConfigSpec.LongValue insertEnergyUsage;
+        private final ForgeConfigSpec.LongValue energyCapacity;
+        private final ForgeConfigSpec.LongValue openEnergyUsage;
+        private final ForgeConfigSpec.LongValue extractEnergyUsage;
+        private final ForgeConfigSpec.LongValue insertEnergyUsage;
 
         WirelessGridEntryImpl() {
             builder.translation(translationKey("wirelessGrid")).push("wirelessGrid");
@@ -930,8 +930,8 @@ public class ConfigImpl implements Config {
     }
 
     private class WirelessTransmitterEntryImpl implements WirelessTransmitterEntry {
-        private final ModConfigSpec.LongValue energyUsage;
-        private final ModConfigSpec.IntValue baseRange;
+        private final ForgeConfigSpec.LongValue energyUsage;
+        private final ForgeConfigSpec.IntValue baseRange;
 
         WirelessTransmitterEntryImpl() {
             builder.translation(translationKey("wirelessTransmitter")).push("wirelessTransmitter");
@@ -956,10 +956,10 @@ public class ConfigImpl implements Config {
     }
 
     private class PortableGridEntryImpl implements PortableGridEntry {
-        private final ModConfigSpec.LongValue energyCapacity;
-        private final ModConfigSpec.LongValue openEnergyUsage;
-        private final ModConfigSpec.LongValue extractEnergyUsage;
-        private final ModConfigSpec.LongValue insertEnergyUsage;
+        private final ForgeConfigSpec.LongValue energyCapacity;
+        private final ForgeConfigSpec.LongValue openEnergyUsage;
+        private final ForgeConfigSpec.LongValue extractEnergyUsage;
+        private final ForgeConfigSpec.LongValue insertEnergyUsage;
 
         PortableGridEntryImpl() {
             builder.translation(translationKey("portableGrid")).push("portableGrid");
@@ -1000,8 +1000,8 @@ public class ConfigImpl implements Config {
     }
 
     private class RelayEntryImpl implements RelayEntry {
-        private final ModConfigSpec.LongValue inputNetworkEnergyUsage;
-        private final ModConfigSpec.LongValue outputNetworkEnergyUsage;
+        private final ForgeConfigSpec.LongValue inputNetworkEnergyUsage;
+        private final ForgeConfigSpec.LongValue outputNetworkEnergyUsage;
 
         RelayEntryImpl() {
             builder.translation(translationKey("relay")).push("relay");
@@ -1026,8 +1026,8 @@ public class ConfigImpl implements Config {
     }
 
     private class AutocrafterEntryImpl implements AutocrafterEntry {
-        private final ModConfigSpec.LongValue energyUsage;
-        private final ModConfigSpec.LongValue energyUsagePerPattern;
+        private final ForgeConfigSpec.LongValue energyUsage;
+        private final ForgeConfigSpec.LongValue energyUsagePerPattern;
 
         AutocrafterEntryImpl() {
             builder.translation(translationKey("autocrafter")).push("autocrafter");
@@ -1052,9 +1052,9 @@ public class ConfigImpl implements Config {
     }
 
     private class AutocrafterManagerEntryImpl implements AutocrafterManagerEntry {
-        private final ModConfigSpec.LongValue energyUsage;
-        private final ModConfigSpec.EnumValue<AutocrafterManagerSearchMode> searchMode;
-        private final ModConfigSpec.EnumValue<AutocrafterManagerViewType> viewType;
+        private final ForgeConfigSpec.LongValue energyUsage;
+        private final ForgeConfigSpec.EnumValue<AutocrafterManagerSearchMode> searchMode;
+        private final ForgeConfigSpec.EnumValue<AutocrafterManagerViewType> viewType;
 
         AutocrafterManagerEntryImpl() {
             builder.translation(translationKey("autocrafterManager")).push("autocrafterManager");
@@ -1103,10 +1103,10 @@ public class ConfigImpl implements Config {
     }
 
     private class WirelessAutocraftingMonitorEntryImpl implements WirelessAutocraftingMonitorEntry {
-        private final ModConfigSpec.LongValue energyCapacity;
-        private final ModConfigSpec.LongValue openEnergyUsage;
-        private final ModConfigSpec.LongValue cancelEnergyUsage;
-        private final ModConfigSpec.LongValue cancelAllEnergyUsage;
+        private final ForgeConfigSpec.LongValue energyCapacity;
+        private final ForgeConfigSpec.LongValue openEnergyUsage;
+        private final ForgeConfigSpec.LongValue cancelEnergyUsage;
+        private final ForgeConfigSpec.LongValue cancelAllEnergyUsage;
 
         WirelessAutocraftingMonitorEntryImpl() {
             builder.translation(translationKey("wirelessAutocraftingMonitor")).push("wirelessAutocraftingMonitor");

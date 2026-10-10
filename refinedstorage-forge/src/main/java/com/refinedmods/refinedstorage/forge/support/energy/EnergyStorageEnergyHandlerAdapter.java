@@ -3,11 +3,9 @@ package com.refinedmods.refinedstorage.forge.support.energy;
 import com.refinedmods.refinedstorage.api.core.Action;
 import com.refinedmods.refinedstorage.api.network.energy.EnergyStorage;
 
-import net.neoforged.neoforge.transfer.energy.EnergyHandler;
-import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.minecraftforge.energy.IEnergyStorage;
 
-public class EnergyStorageEnergyHandlerAdapter extends SnapshotJournal<Long> implements EnergyHandler {
+public class EnergyStorageEnergyHandlerAdapter implements IEnergyStorage {
     private final EnergyStorage energyStorage;
 
     public EnergyStorageEnergyHandlerAdapter(final EnergyStorage energyStorage) {
@@ -19,37 +17,32 @@ public class EnergyStorageEnergyHandlerAdapter extends SnapshotJournal<Long> imp
     }
 
     @Override
-    public long getAmountAsLong() {
-        return energyStorage.getStored();
+    public int receiveEnergy(final int maxReceive, final boolean simulate) {
+        return (int) energyStorage.receive(maxReceive, simulate ? Action.SIMULATE : Action.EXECUTE);
     }
 
     @Override
-    public long getCapacityAsLong() {
-        return energyStorage.getCapacity();
-    }
-
-    @Override
-    public int insert(final int amount, final TransactionContext transaction) {
-        final long insertedSimulated = energyStorage.receive(amount, Action.SIMULATE);
-        if (insertedSimulated > 0) {
-            updateSnapshots(transaction);
-        }
-        return (int) energyStorage.receive(amount, Action.EXECUTE);
-    }
-
-    @Override
-    public int extract(final int amount, final TransactionContext transaction) {
+    public int extractEnergy(final int maxExtract, final boolean simulate) {
         return 0;
     }
 
     @Override
-    protected Long createSnapshot() {
-        return energyStorage.getStored();
+    public int getEnergyStored() {
+        return (int) Math.min(energyStorage.getStored(), Integer.MAX_VALUE);
     }
 
     @Override
-    protected void revertToSnapshot(final Long snapshot) {
-        energyStorage.extract(Long.MAX_VALUE, Action.EXECUTE);
-        energyStorage.receive(snapshot, Action.EXECUTE);
+    public int getMaxEnergyStored() {
+        return (int) Math.min(energyStorage.getCapacity(), Integer.MAX_VALUE);
+    }
+
+    @Override
+    public boolean canExtract() {
+        return false;
+    }
+
+    @Override
+    public boolean canReceive() {
+        return true;
     }
 }

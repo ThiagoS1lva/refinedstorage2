@@ -1,22 +1,35 @@
 package com.refinedmods.refinedstorage.forge.storage.portablegrid;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
+import com.refinedmods.refinedstorage.common.support.direction.OrientedDirection;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.sprite.Material;
-import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
+import net.minecraft.util.StringRepresentable;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-public class PortableGridUnbakedBlockStateModel implements CustomUnbakedBlockStateModel {
-    public static final MapCodec<PortableGridUnbakedBlockStateModel> MODEL_CODEC =
-        MapCodec.unit(PortableGridUnbakedBlockStateModel::new);
+public class PortableGridUnbakedBlockStateModel implements BlockStateModel.Unbaked {
+    public static final MapCodec<PortableGridUnbakedBlockStateModel> MODEL_CODEC = RecordCodecBuilder.mapCodec(
+        instance -> instance.group(
+            StringRepresentable.fromEnum(OrientedDirection::values).fieldOf("direction")
+                .forGetter(unbaked -> unbaked.direction),
+            Codec.BOOL.fieldOf("active").forGetter(unbaked -> unbaked.active)
+        ).apply(instance, PortableGridUnbakedBlockStateModel::new));
 
-    @Override
-    public MapCodec<? extends CustomUnbakedBlockStateModel> codec() {
+    private final OrientedDirection direction;
+    private final boolean active;
+
+    public PortableGridUnbakedBlockStateModel(final OrientedDirection direction, final boolean active) {
+        this.direction = direction;
+        this.active = active;
+    }
+    public MapCodec<? extends BlockStateModel.Unbaked> codec() {
         return MODEL_CODEC;
     }
 
@@ -27,7 +40,7 @@ public class PortableGridUnbakedBlockStateModel implements CustomUnbakedBlockSta
             new Material(createIdentifier("block/portable_grid/portable_grid_1")),
             debugName
         );
-        return new PortableGridBlockStateModel(particleMaterial, modelBaker);
+        return new PortableGridBlockStateModel(particleMaterial, modelBaker, direction, active);
     }
 
     @Override

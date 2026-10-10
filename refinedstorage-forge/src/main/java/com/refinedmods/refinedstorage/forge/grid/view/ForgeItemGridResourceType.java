@@ -4,12 +4,8 @@ import com.refinedmods.refinedstorage.common.grid.view.AbstractItemGridResourceT
 
 import java.util.Optional;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.fml.ModList;
-
-import static java.util.Objects.requireNonNull;
+import net.minecraftforge.fml.ModList;
 
 public class ForgeItemGridResourceType extends AbstractItemGridResourceType {
     public static final ForgeItemGridResourceType INSTANCE = new ForgeItemGridResourceType();
@@ -19,14 +15,13 @@ public class ForgeItemGridResourceType extends AbstractItemGridResourceType {
 
     @Override
     public Optional<String> getModName(final String modId) {
-        return ModList.get().getModContainerById(modId)
+        return ModList.getModContainerById(modId)
             .map(container -> container.getModInfo().getDisplayName());
     }
 
     @Override
     public String getModId(final ItemStack itemStack) {
-        final HolderLookup.Provider registries = requireNonNull(Minecraft.getInstance().level).registryAccess();
-        final String creatorModId = itemStack.getItem().getCreatorModId(registries, itemStack);
+        final String creatorModId = itemStack.getItem().getCreatorModId(itemStack);
         if (creatorModId == null) {
             return "";
         }

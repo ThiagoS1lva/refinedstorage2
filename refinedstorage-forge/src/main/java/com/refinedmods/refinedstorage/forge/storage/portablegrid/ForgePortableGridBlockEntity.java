@@ -6,8 +6,8 @@ import com.refinedmods.refinedstorage.common.storage.portablegrid.PortableGridTy
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.model.data.ModelData;
-import net.neoforged.neoforge.model.data.ModelProperty;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelProperty;
 
 public class ForgePortableGridBlockEntity extends AbstractPortableGridBlockEntity {
     public static final ModelProperty<Disk> DISK_PROPERTY = new ModelProperty<>();

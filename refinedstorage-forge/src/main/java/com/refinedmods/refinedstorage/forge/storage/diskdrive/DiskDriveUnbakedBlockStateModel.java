@@ -1,22 +1,32 @@
 package com.refinedmods.refinedstorage.forge.storage.diskdrive;
 
 import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
+import com.refinedmods.refinedstorage.common.support.direction.OrientedDirection;
 
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.sprite.Material;
-import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
+import net.minecraft.util.StringRepresentable;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 
-public class DiskDriveUnbakedBlockStateModel implements CustomUnbakedBlockStateModel {
-    public static final MapCodec<DiskDriveUnbakedBlockStateModel> MODEL_CODEC = MapCodec
-        .unit(DiskDriveUnbakedBlockStateModel::new);
+public class DiskDriveUnbakedBlockStateModel implements BlockStateModel.Unbaked {
+    public static final MapCodec<DiskDriveUnbakedBlockStateModel> MODEL_CODEC = RecordCodecBuilder.mapCodec(
+        instance -> instance.group(
+            StringRepresentable.fromEnum(OrientedDirection::values).fieldOf("direction")
+                .forGetter(model -> model.direction)
+        ).apply(instance, DiskDriveUnbakedBlockStateModel::new));
 
-    @Override
-    public MapCodec<? extends CustomUnbakedBlockStateModel> codec() {
+    private final OrientedDirection direction;
+
+    public DiskDriveUnbakedBlockStateModel(final OrientedDirection direction) {
+        this.direction = direction;
+    }
+
+    public MapCodec<? extends BlockStateModel.Unbaked> codec() {
         return MODEL_CODEC;
     }
 
@@ -27,7 +37,7 @@ public class DiskDriveUnbakedBlockStateModel implements CustomUnbakedBlockStateM
             new Material(createIdentifier("block/disk_drive/top")),
             debugName
         );
-        return new DiskDriveBlockStateModel(particleMaterial, modelBaker);
+        return new DiskDriveBlockStateModel(particleMaterial, modelBaker, direction);
     }
 
     @Override

@@ -17,10 +17,13 @@ public class MenuOpenerImpl implements MenuOpener {
     }
 
     private static <T> void openExtendedMenu(final ServerPlayer player,
-                                             final ExtendedMenuProvider<T> extendedMenuProvider) {
+                                              final ExtendedMenuProvider<T> extendedMenuProvider) {
         player.openMenu(
             extendedMenuProvider,
-            buf -> extendedMenuProvider.getMenuCodec().encode(buf, extendedMenuProvider.getMenuData())
+            buf -> extendedMenuProvider.getMenuCodec().encode(
+                (net.minecraft.network.RegistryFriendlyByteBuf) buf,
+                extendedMenuProvider.getMenuData()
+            )
         );
     }
 }

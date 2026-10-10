@@ -5,7 +5,7 @@ import com.refinedmods.refinedstorage.common.api.RefinedStorageClientApi;
 import com.refinedmods.refinedstorage.common.storage.Disk;
 import com.refinedmods.refinedstorage.common.support.ComposedModelState;
 import com.refinedmods.refinedstorage.common.support.direction.OrientedDirection;
-import com.refinedmods.refinedstorage.common.support.direction.OrientedDirectionType;
+import net.minecraftforge.client.model.data.ModelData;import com.refinedmods.refinedstorage.common.support.direction.OrientedDirectionType;
 import com.refinedmods.refinedstorage.common.util.ClientPlatformUtil;
 
 import java.util.ArrayList;
@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.mojang.math.Transformation;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.block.dispatch.ModelState;
@@ -21,11 +20,8 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.SimpleModelWrapper;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.sprite.Material;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import org.jspecify.annotations.Nullable;
 
 class DiskDriveBlockStateModel implements BlockStateModel {
@@ -33,21 +29,19 @@ class DiskDriveBlockStateModel implements BlockStateModel {
 
     private final Material.Baked particleMaterial;
     private final ModelBaker modelBaker;
+    private final OrientedDirection direction;
 
-    DiskDriveBlockStateModel(final Material.Baked particleMaterial, final ModelBaker modelBaker) {
+    DiskDriveBlockStateModel(final Material.Baked particleMaterial, final ModelBaker modelBaker,
+                             final OrientedDirection direction) {
         this.particleMaterial = particleMaterial;
         this.modelBaker = modelBaker;
+        this.direction = direction;
     }
 
     @Override
-    public void collectParts(final BlockAndTintGetter level, final BlockPos pos, final BlockState state,
-                             final RandomSource random, final List<BlockStateModelPart> parts) {
-        final EnumProperty<OrientedDirection> property = OrientedDirectionType.INSTANCE.getProperty();
-        if (!state.hasProperty(property)) {
-            return;
-        }
-        final OrientedDirection direction = state.getValue(property);
-        final var disks = level.getModelData(pos).get(ForgeDiskDriveBlockEntity.DISKS_PROPERTY);
+    public void collectParts(final RandomSource random, final List<BlockStateModelPart> parts,
+                             final ModelData data) {
+        final var disks = data.get(ForgeDiskDriveBlockEntity.DISKS_PROPERTY);
         if (disks == null) {
             parts.addAll(modelBaker.compute(new DiskDriveOperationKey(direction, NO_DISKS)));
             return;
@@ -56,7 +50,6 @@ class DiskDriveBlockStateModel implements BlockStateModel {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void collectParts(final RandomSource randomSource, final List<BlockStateModelPart> list) {
         // no op
     }
