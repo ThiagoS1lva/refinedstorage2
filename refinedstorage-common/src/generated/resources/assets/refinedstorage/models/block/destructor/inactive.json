@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:constructor_destructor/inactive",
+  "parent": "refinedstorage:block/constructor_destructor/inactive",
   "textures": {
     "cutout": "refinedstorage:block/destructor/cutouts/inactive",
     "front": "refinedstorage:block/destructor/front"

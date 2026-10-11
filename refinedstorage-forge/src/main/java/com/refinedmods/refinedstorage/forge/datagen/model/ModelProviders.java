@@ -81,7 +81,12 @@ public class ModelProviders extends ModelProvider {
     }
 
     private static ModelTemplate createTemplate(final String id, final TextureSlot... slots) {
-        return new ModelTemplate(Optional.of(Identifier.parse(id)), Optional.empty(), slots);
+        final Identifier location = Identifier.parse(id);
+        return new ModelTemplate(
+            Optional.of(Identifier.fromNamespaceAndPath(location.getNamespace(), "block/" + location.getPath())),
+            Optional.empty(),
+            slots
+        );
     }
 
     private static ModelTemplate createItemTemplate(final String id, final TextureSlot... slots) {

@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:cutout",
+  "parent": "refinedstorage:block/cutout",
   "textures": {
     "cutout_down": "refinedstorage:block/relay/cutouts/in/inactive",
     "cutout_east": "refinedstorage:block/relay/cutouts/in/inactive",

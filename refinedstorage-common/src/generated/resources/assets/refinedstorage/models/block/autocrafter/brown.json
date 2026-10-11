@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:emissive_sides_cutout",
+  "parent": "refinedstorage:block/emissive_sides_cutout",
   "textures": {
     "cutout_east": "refinedstorage:block/autocrafter/cutouts/side/brown",
     "cutout_north": "refinedstorage:block/autocrafter/cutouts/side/brown",

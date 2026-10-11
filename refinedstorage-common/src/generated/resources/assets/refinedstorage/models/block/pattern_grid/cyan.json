@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:emissive_north_cutout",
+  "parent": "refinedstorage:block/emissive_north_cutout",
   "textures": {
     "cutout": "refinedstorage:block/pattern_grid/cutouts/cyan",
     "down": "refinedstorage:block/bottom",

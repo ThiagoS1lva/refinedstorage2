@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:emissive_cutout",
+  "parent": "refinedstorage:block/emissive_cutout",
   "textures": {
     "cutout_down": "refinedstorage:block/relay/cutouts/in/red",
     "cutout_east": "refinedstorage:block/relay/cutouts/in/red",

@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:emissive_all_cutout",
+  "parent": "refinedstorage:block/emissive_all_cutout",
   "textures": {
     "all": "refinedstorage:block/controller/on",
     "cutout": "refinedstorage:block/controller/cutouts/red",
