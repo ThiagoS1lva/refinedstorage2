@@ -13,7 +13,16 @@ public class ForgeImporterBlockEntity extends AbstractImporterBlockEntity {
     }
 
     @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && level.isClientSide()) {
+            updateConnections();
+            requestModelDataUpdate();
+        }
+    }
+
+    @Override
     public ModelData getModelData() {
-        return ModelData.builder().with(ModelProperties.CABLE_CONNECTIONS, connections).build();
+        return ModelData.builder().with(ModelProperties.CABLE_CONNECTIONS, getConnections()).build();
     }
 }

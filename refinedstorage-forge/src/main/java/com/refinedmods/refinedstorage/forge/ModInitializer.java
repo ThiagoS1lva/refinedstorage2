@@ -501,7 +501,10 @@ public class ModInitializer extends AbstractModInitializer {
                                                                            final StreamCodec<RegistryFriendlyByteBuf, D>
                                                                                streamCodec) {
                 return IForgeMenuType.create((syncId, inventory, buf) -> {
-                    final D data = streamCodec.decode((RegistryFriendlyByteBuf) buf);
+                    final RegistryFriendlyByteBuf regBuf = buf instanceof RegistryFriendlyByteBuf r
+                        ? r
+                        : new RegistryFriendlyByteBuf(buf, inventory.player.registryAccess());
+                    final D data = streamCodec.decode(regBuf);
                     return supplier.create(syncId, inventory, data);
                 });
             }

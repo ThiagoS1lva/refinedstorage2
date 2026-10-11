@@ -3,6 +3,7 @@ package com.refinedmods.refinedstorage.forge.support.containermenu;
 import com.refinedmods.refinedstorage.common.support.containermenu.ExtendedMenuProvider;
 import com.refinedmods.refinedstorage.common.support.containermenu.MenuOpener;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 
@@ -20,10 +21,15 @@ public class MenuOpenerImpl implements MenuOpener {
                                               final ExtendedMenuProvider<T> extendedMenuProvider) {
         player.openMenu(
             extendedMenuProvider,
-            buf -> extendedMenuProvider.getMenuCodec().encode(
-                (net.minecraft.network.RegistryFriendlyByteBuf) buf,
-                extendedMenuProvider.getMenuData()
-            )
+            buf -> {
+                final RegistryFriendlyByteBuf regBuf = buf instanceof RegistryFriendlyByteBuf r
+                    ? r
+                    : new RegistryFriendlyByteBuf(buf, player.registryAccess());
+                extendedMenuProvider.getMenuCodec().encode(
+                    regBuf,
+                    extendedMenuProvider.getMenuData()
+                );
+            }
         );
     }
 }

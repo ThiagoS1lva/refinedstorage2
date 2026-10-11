@@ -68,6 +68,9 @@ public abstract class AbstractCableLikeBlockEntity<T extends AbstractNetworkNode
     }
 
     public CableConnections getConnections() {
+        if (connections.equals(CableConnections.NONE) && level != null && level.isClientSide()) {
+            updateConnections();
+        }
         return connections;
     }
 

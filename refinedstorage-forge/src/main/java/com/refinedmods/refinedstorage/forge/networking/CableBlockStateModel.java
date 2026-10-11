@@ -1,12 +1,14 @@
 package com.refinedmods.refinedstorage.forge.networking;
 
 import com.refinedmods.refinedstorage.common.networking.CableConnections;
+import com.refinedmods.refinedstorage.common.support.AbstractCableLikeBlockEntity;
 import com.refinedmods.refinedstorage.forge.support.render.ModelProperties;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.math.OctahedralGroup;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
@@ -14,10 +16,13 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.SimpleModelWrapper;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import org.jspecify.annotations.Nullable;
 
@@ -36,6 +41,24 @@ class CableBlockStateModel implements BlockStateModel {
         this.modelBaker = modelBaker;
         this.color = color;
         this.part = part;
+    }
+
+    @Override
+    public ModelData getModelData(final BlockAndTintGetter level, final BlockPos pos,
+                                  final BlockState state, final ModelData modelData) {
+        final CableConnections current = modelData.get(ModelProperties.CABLE_CONNECTIONS);
+        if (current != null && !current.equals(CableConnections.NONE)) {
+            return modelData;
+        }
+        final BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof AbstractCableLikeBlockEntity<?> cable) {
+            final CableConnections beConnections = cable.getConnections();
+            if (beConnections != null && !beConnections.equals(CableConnections.NONE)) {
+                return ModelData.builder().with(ModelProperties.CABLE_CONNECTIONS, beConnections).build();
+            }
+            return cable.getModelData();
+        }
+        return modelData;
     }
 
     @Override
