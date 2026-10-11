@@ -32,7 +32,7 @@ public class FluidGridInsertionStrategy implements GridInsertionStrategy {
         if (carried.isEmpty()) {
             return false;
         }
-        final IFluidHandlerItem probe = FluidUtil.getFluidHandler(carried.copy()).resolve().orElse(null);
+        final IFluidHandlerItem probe = FluidUtil.getFluidHandler(carried.copy()).orElse(null);
         if (probe == null) {
             return false;
         }
@@ -48,7 +48,7 @@ public class FluidGridInsertionStrategy implements GridInsertionStrategy {
             final boolean simulate = action == Action.SIMULATE;
             final ItemStack live = menu.getCarried();
             final IFluidHandlerItem handler = FluidUtil.getFluidHandler(simulate ? live.copy() : live)
-                .resolve().orElse(null);
+                .orElse(null);
             if (handler == null) {
                 return 0;
             }

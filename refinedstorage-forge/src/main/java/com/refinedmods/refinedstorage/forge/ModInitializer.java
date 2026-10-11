@@ -172,6 +172,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -523,28 +524,28 @@ public class ModInitializer extends AbstractModInitializer {
         final BlockEntity blockEntity = event.getObject();
         if (blockEntity instanceof AbstractNetworkNodeContainerBlockEntity<?> container) {
             attach(event, RefinedStorageForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),
-                createIdentifier("network_node_container"), container.getContainerProvider());
+                createIdentifier("network_node_container"), container::getContainerProvider);
         }
         if (blockEntity instanceof AbstractDiskDriveBlockEntity drive) {
             attach(event, ForgeCapabilities.ITEM_HANDLER, createIdentifier("disk_drive"),
-                new InvWrapper(drive.getDiskInventory()));
+                () -> new InvWrapper(drive.getDiskInventory()));
         } else if (blockEntity instanceof InterfaceBlockEntity iface) {
             attach(event, ForgeCapabilities.ITEM_HANDLER, createIdentifier("interface_items"),
-                new InvWrapper(iface.getExportedResourcesAsContainer()));
+                () -> new InvWrapper(iface.getExportedResourcesAsContainer()));
             attach(event, ForgeCapabilities.FLUID_HANDLER, createIdentifier("interface_fluids"),
-                new ResourceContainerFluidHandler(iface.getExportedResources()));
+                () -> new ResourceContainerFluidHandler(iface.getExportedResources()));
         } else if (blockEntity instanceof PatternGridBlockEntity patternGrid) {
             attach(event, ForgeCapabilities.ITEM_HANDLER, createIdentifier("pattern_grid"),
-                new InvWrapper(patternGrid.getPatternInput()));
+                () -> new InvWrapper(patternGrid.getPatternInput()));
         } else if (blockEntity instanceof ControllerBlockEntity controller) {
             attach(event, ForgeCapabilities.ENERGY, createIdentifier("controller_energy"),
-                new EnergyStorageEnergyHandlerAdapter(controller.getEnergyStorage()));
+                () -> new EnergyStorageEnergyHandlerAdapter(controller.getEnergyStorage()));
         } else if (blockEntity instanceof AbstractPortableGridBlockEntity portableGrid) {
             attach(event, ForgeCapabilities.ENERGY, createIdentifier("portable_grid_energy"),
-                new EnergyStorageEnergyHandlerAdapter(portableGrid.getEnergyStorage()));
+                () -> new EnergyStorageEnergyHandlerAdapter(portableGrid.getEnergyStorage()));
         } else if (blockEntity instanceof ForgeDiskInterfaceBlockEntity diskInterface) {
             attach(event, ForgeCapabilities.ITEM_HANDLER, createIdentifier("disk_interface"),
-                new DiskInterfaceItemHandler(diskInterface.getDiskInventory()));
+                () -> new DiskInterfaceItemHandler(diskInterface.getDiskInventory()));
         }
     }
 
@@ -573,27 +574,30 @@ public class ModInitializer extends AbstractModInitializer {
 
     private static void attachItemEnergy(final AttachCapabilitiesEvent.ItemStacks event,
                                          final EnergyStorage energyStorage) {
+        final LazyOptional<IEnergyStorage> lazyOptional = LazyOptional.of(
+            () -> new EnergyStorageEnergyHandlerAdapter(energyStorage)
+        );
         event.addCapability(createIdentifier("energy"), new ICapabilityProvider() {
             @Override
             public <R> LazyOptional<R> getCapability(final Capability<R> queried, final Direction side) {
-                return ForgeCapabilities.ENERGY.orEmpty(
-                    queried,
-                    LazyOptional.of(() -> new EnergyStorageEnergyHandlerAdapter(energyStorage))
-                );
+                return ForgeCapabilities.ENERGY.orEmpty(queried, lazyOptional);
             }
         });
+        event.addListener(lazyOptional::invalidate);
     }
 
     private static <T> void attach(final AttachCapabilitiesEvent.BlockEntities event,
                                    final Capability<T> capability,
                                    final Identifier identifier,
-                                   final T value) {
+                                   final NonNullSupplier<T> supplier) {
+        final LazyOptional<T> lazyOptional = LazyOptional.of(supplier);
         event.addCapability(identifier, new ICapabilityProvider() {
             @Override
             public <R> LazyOptional<R> getCapability(final Capability<R> queried, final Direction side) {
-                return capability.orEmpty(queried, LazyOptional.of(() -> value));
+                return capability.orEmpty(queried, lazyOptional);
             }
         });
+        event.addListener(lazyOptional::invalidate);
     }
     private void registerSounds(final BusGroup modBusGroup) {
         registerSounds(new ForgeRegistryCallback<>(soundEventRegistry));

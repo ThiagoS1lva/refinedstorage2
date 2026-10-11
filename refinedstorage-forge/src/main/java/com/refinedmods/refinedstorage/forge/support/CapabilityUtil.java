@@ -32,7 +32,7 @@ public final class CapabilityUtil {
         return blockEntity.getCapability(
             RefinedStorageForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),
             direction
-        ).resolve().orElse(null);
+        ).orElse(null);
     }
 
     @Nullable
@@ -42,7 +42,7 @@ public final class CapabilityUtil {
         if (blockEntity == null) {
             return null;
         }
-        return blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).resolve().orElse(null);
+        return blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(null);
     }
 
     @Nullable
@@ -52,7 +52,7 @@ public final class CapabilityUtil {
         if (blockEntity == null) {
             return null;
         }
-        return blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, direction).resolve().orElse(null);
+        return blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, direction).orElse(null);
     }
 
     @Nullable
@@ -62,7 +62,7 @@ public final class CapabilityUtil {
         if (blockEntity == null) {
             return null;
         }
-        return blockEntity.getCapability(ForgeCapabilities.ENERGY, direction).resolve().orElse(null);
+        return blockEntity.getCapability(ForgeCapabilities.ENERGY, direction).orElse(null);
     }
 
     @Nullable
@@ -70,7 +70,7 @@ public final class CapabilityUtil {
         if (stack.isEmpty()) {
             return null;
         }
-        return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve().orElse(null);
+        return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
     }
 
     public static boolean isValid(final ServerLevel level, final BlockPos pos) {

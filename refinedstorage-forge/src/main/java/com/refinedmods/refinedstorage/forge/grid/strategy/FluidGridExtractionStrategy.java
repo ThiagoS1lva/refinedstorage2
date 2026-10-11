@@ -74,7 +74,7 @@ public class FluidGridExtractionStrategy implements GridExtractionStrategy {
                 return 0;
             }
             final ItemStack container = carried.copyWithCount(1);
-            final IFluidHandlerItem filler = FluidUtil.getFluidHandler(container).resolve().orElse(null);
+            final IFluidHandlerItem filler = FluidUtil.getFluidHandler(container).orElse(null);
             if (filler == null) {
                 return 0;
             }
@@ -165,7 +165,7 @@ public class FluidGridExtractionStrategy implements GridExtractionStrategy {
     @Nullable
     private static FillResult fillBucket(final FluidStack fluid) {
         final IFluidHandlerItem filler = FluidUtil.getFluidHandler(new ItemStack(Items.BUCKET))
-            .resolve().orElse(null);
+            .orElse(null);
         if (filler == null) {
             return null;
         }
@@ -210,7 +210,7 @@ public class FluidGridExtractionStrategy implements GridExtractionStrategy {
         if (carried.isEmpty()) {
             return false;
         }
-        return FluidUtil.getFluidHandler(carried.copy()).resolve().isPresent();
+        return FluidUtil.getFluidHandler(carried.copy()).isPresent();
     }
 
     private boolean hasBucketInInventory() {

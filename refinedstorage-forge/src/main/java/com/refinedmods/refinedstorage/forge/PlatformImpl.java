@@ -138,7 +138,7 @@ public final class PlatformImpl extends AbstractPlatform {
             return Optional.empty();
         }
         final ItemStack copy = container.copy();
-        final IFluidHandlerItem handler = FluidUtil.getFluidHandler(copy).resolve().orElse(null);
+        final IFluidHandlerItem handler = FluidUtil.getFluidHandler(copy).orElse(null);
         if (handler == null) {
             return Optional.empty();
         }
@@ -161,7 +161,7 @@ public final class PlatformImpl extends AbstractPlatform {
             return Optional.empty();
         }
         final ItemStack copy = container.copy();
-        final IFluidHandlerItem handler = FluidUtil.getFluidHandler(copy).resolve().orElse(null);
+        final IFluidHandlerItem handler = FluidUtil.getFluidHandler(copy).orElse(null);
         if (handler == null) {
             return Optional.empty();
         }
@@ -345,7 +345,7 @@ public final class PlatformImpl extends AbstractPlatform {
 
     @Override
     public Optional<EnergyStorage> getEnergyStorage(final ItemStack stack, final EnergyItemContext context) {
-        return stack.getCapability(ForgeCapabilities.ENERGY).resolve()
+        return Optional.ofNullable(stack.getCapability(ForgeCapabilities.ENERGY).orElse(null))
             .filter(EnergyStorageEnergyHandlerAdapter.class::isInstance)
             .map(EnergyStorageEnergyHandlerAdapter.class::cast)
             .map(EnergyStorageEnergyHandlerAdapter::getEnergyStorage);
@@ -397,7 +397,7 @@ public final class PlatformImpl extends AbstractPlatform {
         return safeBlockEntity.getCapability(
             RefinedStorageForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),
             direction
-        ).resolve().orElse(null);
+        ).orElse(null);
     }
 
     @Override
