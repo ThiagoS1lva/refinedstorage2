@@ -54,16 +54,21 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
 
     @Mod.EventBusSubscriber(modid = IdentifierUtil.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
-    @SubscribeEvent
-    public static void onClientSetup(final FMLClientSetupEvent e) {
-        AbstractClientModInitializer.initializeClientPlatformApi();
-        ModelEvent.ModifyBakingResult.BUS.addListener(ModelSwapHandler::onModifyBakingResult);
-        registerScreens();
-        registerBlockEntityRenderer();
-        registerResourceRendering();
-        registerAlternativeGridHints();
-        registerDiskModels();
-    }
+        private static boolean initialized;
+
+        @SubscribeEvent
+        public static void onClientSetup(final FMLClientSetupEvent e) {
+            if (initialized) {
+                return;
+            }
+            initialized = true;
+            AbstractClientModInitializer.initializeClientPlatformApi();
+            registerScreens();
+            registerBlockEntityRenderer();
+            registerResourceRendering();
+            registerAlternativeGridHints();
+            registerDiskModels();
+        }
     }
 
     @Mod.EventBusSubscriber(modid = IdentifierUtil.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)

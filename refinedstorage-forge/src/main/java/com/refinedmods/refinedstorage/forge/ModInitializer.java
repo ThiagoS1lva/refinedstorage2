@@ -177,6 +177,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import com.refinedmods.refinedstorage.forge.support.model.ModelSwapHandler;
 
 import net.minecraftforge.common.extensions.IForgeMenuType;
 
@@ -269,11 +272,14 @@ public class ModInitializer extends AbstractModInitializer {
             // Item model properties of the mod have to be known before the client loads item models
             // and before the data generators serialize them.
             ItemModelPropertySupport.registerAll();
+            ModelEvent.ModifyBakingResult.BUS.addListener(ModelSwapHandler::onModifyBakingResult);
+            FMLClientSetupEvent.getBus(modBusGroup).addListener(ClientModInitializer.ClientModEvents::onClientSetup);
         }
         buildChannel();
         registerContent(modBusGroup);
         registerSounds(modBusGroup);
         registerRecipeSerializers(modBusGroup);
+        attachCapabilities();
 
         FMLCommonSetupEvent.getBus(modBusGroup).addListener(this::onCommonSetup);
         GatherDataEvent.getBus(modBusGroup).addListener(DataGenerators::onGatherData);
@@ -519,54 +525,49 @@ public class ModInitializer extends AbstractModInitializer {
             attach(event, RefinedStorageForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),
                 createIdentifier("network_node_container"), container.getContainerProvider());
         }
-        if (blockEntity.getType() == BlockEntities.INSTANCE.getDiskDrive()) {
+        if (blockEntity instanceof AbstractDiskDriveBlockEntity drive) {
             attach(event, ForgeCapabilities.ITEM_HANDLER, createIdentifier("disk_drive"),
-                new InvWrapper(((AbstractDiskDriveBlockEntity) blockEntity).getDiskInventory()));
-        } else if (blockEntity.getType() == BlockEntities.INSTANCE.getInterface()) {
-            final InterfaceBlockEntity iface = (InterfaceBlockEntity) blockEntity;
+                new InvWrapper(drive.getDiskInventory()));
+        } else if (blockEntity instanceof InterfaceBlockEntity iface) {
             attach(event, ForgeCapabilities.ITEM_HANDLER, createIdentifier("interface_items"),
                 new InvWrapper(iface.getExportedResourcesAsContainer()));
             attach(event, ForgeCapabilities.FLUID_HANDLER, createIdentifier("interface_fluids"),
                 new ResourceContainerFluidHandler(iface.getExportedResources()));
-        } else if (blockEntity.getType() == BlockEntities.INSTANCE.getPatternGrid()) {
+        } else if (blockEntity instanceof PatternGridBlockEntity patternGrid) {
             attach(event, ForgeCapabilities.ITEM_HANDLER, createIdentifier("pattern_grid"),
-                new InvWrapper(((PatternGridBlockEntity) blockEntity).getPatternInput()));
-        } else if (blockEntity.getType() == BlockEntities.INSTANCE.getController()
-            || blockEntity.getType() == BlockEntities.INSTANCE.getCreativeController()) {
+                new InvWrapper(patternGrid.getPatternInput()));
+        } else if (blockEntity instanceof ControllerBlockEntity controller) {
             attach(event, ForgeCapabilities.ENERGY, createIdentifier("controller_energy"),
-                new EnergyStorageEnergyHandlerAdapter(
-                    ((ControllerBlockEntity) blockEntity).getEnergyStorage()));
-        } else if (blockEntity.getType() == BlockEntities.INSTANCE.getPortableGrid()
-            || blockEntity.getType() == BlockEntities.INSTANCE.getCreativePortableGrid()) {
+                new EnergyStorageEnergyHandlerAdapter(controller.getEnergyStorage()));
+        } else if (blockEntity instanceof AbstractPortableGridBlockEntity portableGrid) {
             attach(event, ForgeCapabilities.ENERGY, createIdentifier("portable_grid_energy"),
-                new EnergyStorageEnergyHandlerAdapter(
-                    ((AbstractPortableGridBlockEntity) blockEntity).getEnergyStorage()));
-        } else if (blockEntity.getType() == BlockEntities.INSTANCE.getDiskInterface()) {
+                new EnergyStorageEnergyHandlerAdapter(portableGrid.getEnergyStorage()));
+        } else if (blockEntity instanceof ForgeDiskInterfaceBlockEntity diskInterface) {
             attach(event, ForgeCapabilities.ITEM_HANDLER, createIdentifier("disk_interface"),
-                new DiskInterfaceItemHandler(
-                    ((ForgeDiskInterfaceBlockEntity) blockEntity).getDiskInventory()));
+                new DiskInterfaceItemHandler(diskInterface.getDiskInventory()));
         }
     }
 
     private void attachItemCapabilities(final AttachCapabilitiesEvent.ItemStacks event) {
         final ItemStack stack = event.getObject();
         final Item item = stack.getItem();
-        if (item == Items.INSTANCE.getWirelessGrid()) {
-            attachItemEnergy(event, WirelessGridItem.createEnergyStorage(stack, new StackEnergyItemContext(stack)));
-        } else if (item == Items.INSTANCE.getWirelessAutocraftingMonitor()) {
-            attachItemEnergy(event, WirelessAutocraftingMonitorItem.createEnergyStorage(
-                stack, new StackEnergyItemContext(stack)));
-        } else if (item == Items.INSTANCE.getPortableGrid()) {
-            attachItemEnergy(event, PortableGridBlockItem.createEnergyStorage(stack,
-                new StackEnergyItemContext(stack)));
-        } else {
-            for (final Supplier<ControllerBlockItem> controllerItem : Items.INSTANCE.getControllers()) {
-                if (item == controllerItem.get()) {
-                    attachItemEnergy(event, ControllerBlockItem.createEnergyStorage(
-                        stack, new StackEnergyItemContext(stack)));
-                    return;
-                }
+        try {
+            if (item instanceof ControllerBlockItem) {
+                attachItemEnergy(event, ControllerBlockItem.createEnergyStorage(
+                    stack, new StackEnergyItemContext(stack)));
+            } else if (item instanceof PortableGridBlockItem && item == Items.INSTANCE.getPortableGrid()) {
+                attachItemEnergy(event, PortableGridBlockItem.createEnergyStorage(
+                    stack, new StackEnergyItemContext(stack)));
+            } else if (item instanceof WirelessGridItem && item == Items.INSTANCE.getWirelessGrid()) {
+                attachItemEnergy(event, WirelessGridItem.createEnergyStorage(
+                    stack, new StackEnergyItemContext(stack)));
+            } else if (item instanceof WirelessAutocraftingMonitorItem
+                && item == Items.INSTANCE.getWirelessAutocraftingMonitor()) {
+                attachItemEnergy(event, WirelessAutocraftingMonitorItem.createEnergyStorage(
+                    stack, new StackEnergyItemContext(stack)));
             }
+        } catch (final NullPointerException | IllegalStateException ignored) {
+            // Registries not yet initialized
         }
     }
 
