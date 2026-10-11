@@ -1,9 +1,7 @@
 {
   "variants": {
     "": {
-      "type": "refinedstorage:cable_part",
-      "color": "orange",
-      "part_model": "refinedstorage:block/external_storage/base"
+      "model": "refinedstorage:block/external_storage/base"
     }
   }
 }

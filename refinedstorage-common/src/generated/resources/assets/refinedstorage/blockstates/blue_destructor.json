@@ -1,10 +1,7 @@
 {
   "variants": {
     "": {
-      "type": "refinedstorage:active_inactive_cable_part",
-      "active_part_model": "refinedstorage:block/destructor/active",
-      "color": "blue",
-      "inactive_part_model": "refinedstorage:block/destructor/inactive"
+      "model": "refinedstorage:block/destructor/inactive"
     }
   }
 }

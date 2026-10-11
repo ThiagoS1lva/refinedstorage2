@@ -106,6 +106,7 @@ import com.refinedmods.refinedstorage.forge.api.RefinedStorageForgeApiProxy;
 import com.refinedmods.refinedstorage.forge.autocrafting.FluidHandlerExternalPatternSinkStrategyFactoryImpl;
 import com.refinedmods.refinedstorage.forge.autocrafting.ItemHandlerExternalPatternSinkStrategyFactoryImpl;
 import com.refinedmods.refinedstorage.forge.datagen.DataGenerators;
+import com.refinedmods.refinedstorage.forge.support.model.ItemModelPropertySupport;
 import com.refinedmods.refinedstorage.forge.constructordestructor.ForgeConstructorBlockEntity;
 import com.refinedmods.refinedstorage.forge.constructordestructor.ForgeDestructorBlockEntity;
 import com.refinedmods.refinedstorage.forge.debug.DebugStickItem;
@@ -174,6 +175,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -263,6 +265,11 @@ public class ModInitializer extends AbstractModInitializer {
         registerExporterTransferStrategyFactories();
         registerExternalStorageProviderFactories();
         registerExternalPatternSinkStrategyFactories();
+        if (FMLLoader.getDist().isClient()) {
+            // Item model properties of the mod have to be known before the client loads item models
+            // and before the data generators serialize them.
+            ItemModelPropertySupport.registerAll();
+        }
         buildChannel();
         registerContent(modBusGroup);
         registerSounds(modBusGroup);

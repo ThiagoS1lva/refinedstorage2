@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:block/north_cutout",
+  "parent": "refinedstorage:north_cutout",
   "textures": {
     "cutout": "refinedstorage:block/disk_interface/cutouts/inactive",
     "down": "refinedstorage:block/bottom",

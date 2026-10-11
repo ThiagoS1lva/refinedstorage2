@@ -16,6 +16,7 @@ import com.refinedmods.refinedstorage.common.support.tooltip.HelpClientTooltipCo
 import com.refinedmods.refinedstorage.common.upgrade.RegulatorUpgradeItem;
 import com.refinedmods.refinedstorage.common.upgrade.UpgradeDestinationClientTooltipComponent;
 import com.refinedmods.refinedstorage.common.util.IdentifierUtil;
+import com.refinedmods.refinedstorage.forge.support.model.ModelSwapHandler;
 import com.refinedmods.refinedstorage.forge.storage.diskdrive.ForgeDiskDriveBlockEntityRenderer;
 import com.refinedmods.refinedstorage.forge.storage.diskinterface.ForgeDiskInterfaceBlockEntityRenderer;
 import com.refinedmods.refinedstorage.forge.storage.portablegrid.ForgePortableGridBlockEntityRenderer;
@@ -37,6 +38,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
@@ -52,15 +54,16 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
 
     @Mod.EventBusSubscriber(modid = IdentifierUtil.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
-        @SubscribeEvent
-        public static void onClientSetup(final FMLClientSetupEvent e) {
-            AbstractClientModInitializer.initializeClientPlatformApi();
-            registerScreens();
-            registerBlockEntityRenderer();
-            registerResourceRendering();
-            registerAlternativeGridHints();
-            registerDiskModels();
-        }
+    @SubscribeEvent
+    public static void onClientSetup(final FMLClientSetupEvent e) {
+        AbstractClientModInitializer.initializeClientPlatformApi();
+        ModelEvent.ModifyBakingResult.BUS.addListener(ModelSwapHandler::onModifyBakingResult);
+        registerScreens();
+        registerBlockEntityRenderer();
+        registerResourceRendering();
+        registerAlternativeGridHints();
+        registerDiskModels();
+    }
     }
 
     @Mod.EventBusSubscriber(modid = IdentifierUtil.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)

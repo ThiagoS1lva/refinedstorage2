@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:block/cable/core/base",
+  "parent": "refinedstorage:cable/core/base",
   "textures": {
     "cable": "refinedstorage:block/cable/yellow"
   }

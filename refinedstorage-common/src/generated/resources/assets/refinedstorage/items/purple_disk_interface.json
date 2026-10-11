@@ -1,6 +1,6 @@
 {
   "model": {
-    "type": "refinedstorage:disk_interface",
-    "color": "purple"
+    "type": "minecraft:model",
+    "model": "refinedstorage:block/disk_interface/purple"
   }
 }

@@ -1,8 +1,7 @@
 {
   "variants": {
     "": {
-      "type": "refinedstorage:cable",
-      "color": "brown"
+      "model": "refinedstorage:block/cable/core/brown"
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "type": "refinedstorage:portable_grid"
+      "model": "refinedstorage:block/portable_grid/inactive"
     }
   }
 }

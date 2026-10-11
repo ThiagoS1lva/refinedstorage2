@@ -1,8 +1,7 @@
 {
   "variants": {
     "": {
-      "type": "refinedstorage:disk_interface",
-      "color": "lime"
+      "model": "refinedstorage:block/disk_interface/inactive"
     }
   }
 }

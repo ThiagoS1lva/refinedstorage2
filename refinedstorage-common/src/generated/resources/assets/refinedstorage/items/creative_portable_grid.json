@@ -1,5 +1,6 @@
 {
   "model": {
-    "type": "refinedstorage:portable_grid"
+    "type": "minecraft:model",
+    "model": "refinedstorage:block/portable_grid/inactive"
   }
 }

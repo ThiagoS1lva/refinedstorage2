@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:block/emissive_sides_cutout",
+  "parent": "refinedstorage:emissive_sides_cutout",
   "textures": {
     "cutout_east": "refinedstorage:block/security_manager/cutouts/right/magenta",
     "cutout_north": "refinedstorage:block/security_manager/cutouts/front/magenta",

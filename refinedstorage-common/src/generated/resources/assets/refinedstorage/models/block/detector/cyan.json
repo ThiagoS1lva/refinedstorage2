@@ -1,5 +1,5 @@
 {
-  "parent": "refinedstorage:block/detector/powered",
+  "parent": "refinedstorage:detector/powered",
   "textures": {
     "torch": "refinedstorage:block/detector/cutouts/cyan"
   }

@@ -1,9 +1,7 @@
 {
   "variants": {
     "": {
-      "type": "refinedstorage:cable_part",
-      "color": "blue",
-      "part_model": "refinedstorage:block/importer/base"
+      "model": "refinedstorage:block/importer/base"
     }
   }
 }
