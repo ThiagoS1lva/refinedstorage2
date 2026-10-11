@@ -1,5 +1,6 @@
 package com.refinedmods.refinedstorage.forge.support;
 
+import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.forge.api.RefinedStorageForgeApi;
 
@@ -28,6 +29,9 @@ public final class CapabilityUtil {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity == null) {
             return null;
+        }
+        if (blockEntity instanceof AbstractNetworkNodeContainerBlockEntity<?> container) {
+            return container.getContainerProvider();
         }
         return blockEntity.getCapability(
             RefinedStorageForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),

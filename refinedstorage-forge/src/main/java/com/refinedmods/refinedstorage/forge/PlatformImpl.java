@@ -8,6 +8,7 @@ import com.refinedmods.refinedstorage.common.Config;
 import com.refinedmods.refinedstorage.common.api.autocrafting.PatternProviderExternalPatternSinkFactory;
 import com.refinedmods.refinedstorage.common.api.grid.view.GridResourceType;
 import com.refinedmods.refinedstorage.common.api.support.energy.EnergyItemContext;
+import com.refinedmods.refinedstorage.common.api.support.network.AbstractNetworkNodeContainerBlockEntity;
 import com.refinedmods.refinedstorage.common.api.support.network.NetworkNodeContainerProvider;
 import com.refinedmods.refinedstorage.common.api.support.resource.FluidOperationResult;
 import com.refinedmods.refinedstorage.common.support.RecipeProvider;
@@ -393,6 +394,9 @@ public final class PlatformImpl extends AbstractPlatform {
         );
         if (safeBlockEntity == null) {
             return null;
+        }
+        if (safeBlockEntity instanceof AbstractNetworkNodeContainerBlockEntity<?> container) {
+            return container.getContainerProvider();
         }
         return safeBlockEntity.getCapability(
             RefinedStorageForgeApi.INSTANCE.getNetworkNodeContainerProviderCapability(),

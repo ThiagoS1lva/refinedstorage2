@@ -46,17 +46,12 @@ class CableBlockStateModel implements BlockStateModel {
     @Override
     public ModelData getModelData(final BlockAndTintGetter level, final BlockPos pos,
                                   final BlockState state, final ModelData modelData) {
-        final CableConnections current = modelData.get(ModelProperties.CABLE_CONNECTIONS);
-        if (current != null && !current.equals(CableConnections.NONE)) {
-            return modelData;
-        }
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof AbstractCableLikeBlockEntity<?> cable) {
             final CableConnections beConnections = cable.getConnections();
-            if (beConnections != null && !beConnections.equals(CableConnections.NONE)) {
+            if (beConnections != null) {
                 return ModelData.builder().with(ModelProperties.CABLE_CONNECTIONS, beConnections).build();
             }
-            return cable.getModelData();
         }
         return modelData;
     }
