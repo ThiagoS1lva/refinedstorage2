@@ -300,7 +300,7 @@ public abstract class AbstractPortableGridBlockEntity extends BlockEntity
 
     private static BlockEntityType<AbstractPortableGridBlockEntity> getBlockEntityType(final PortableGridType type) {
         return type == PortableGridType.CREATIVE
-            ? BlockEntities.INSTANCE.getCreativePortableGrid()
-            : BlockEntities.INSTANCE.getPortableGrid();
+            ? com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getCreativePortableGrid()
+            : com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getPortableGrid();
     }
 }

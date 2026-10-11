@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractCableBlockEntity extends AbstractCableLikeBlockEntity<SimpleNetworkNode> {
     protected AbstractCableBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getCable(), pos, state, new SimpleNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getCable(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getCable().getEnergyUsage()));
     }
 

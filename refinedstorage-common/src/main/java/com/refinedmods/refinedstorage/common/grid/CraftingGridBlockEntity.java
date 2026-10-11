@@ -45,7 +45,7 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity
 
     public CraftingGridBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getCraftingGrid(),
+            com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getCraftingGrid(),
             pos,
             state,
             Platform.INSTANCE.getConfig().getCraftingGrid().getEnergyUsage()

@@ -51,7 +51,7 @@ public class DetectorBlockEntity extends AbstractBaseNetworkNodeContainerBlockEn
     private double amount;
 
     public DetectorBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getDetector(), pos, state, new DetectorNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getDetector(), pos, state, new DetectorNetworkNode(
             Platform.INSTANCE.getConfig().getDetector().getEnergyUsage()
         ));
         final ResourceContainer resourceContainer = ResourceContainerImpl.createForFilter(1);

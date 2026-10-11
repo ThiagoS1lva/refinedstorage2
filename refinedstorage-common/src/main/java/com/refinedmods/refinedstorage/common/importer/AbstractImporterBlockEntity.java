@@ -54,7 +54,7 @@ public abstract class AbstractImporterBlockEntity extends AbstractCableLikeBlock
 
     protected AbstractImporterBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getImporter(),
+            com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getImporter(),
             pos,
             state,
             new ImporterNetworkNode(Platform.INSTANCE.getConfig().getImporter().getEnergyUsage())

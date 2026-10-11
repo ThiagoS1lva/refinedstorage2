@@ -1,8 +1,9 @@
-# Unofficial Forge port of Refined Storage (MVP).
+# Unofficial Forge port of Refined Storage.
 # Upstream: https://github.com/refinedmods/refinedstorage2 (MIT)
+# Target: Forge 26.1.2 (javafml 64).
 
 modLoader="javafml"
-loaderVersion="[66,)"
+loaderVersion="[64,)"
 license="MIT"
 issueTrackerURL="https://github.com/ThiagoS1lva/refinedstorage2"
 
@@ -18,13 +19,13 @@ Upstream: https://github.com/refinedmods/refinedstorage2 (MIT).'''
 [[dependencies.refinedstorage]]
     modId="forge"
     mandatory=true
-    versionRange="[66,)"
+    versionRange="[64,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.refinedstorage]]
     modId="minecraft"
     mandatory=true
-    versionRange="[26.3,26.4)"
+    versionRange="[26.1,26.2)"
     ordering="NONE"
     side="BOTH"

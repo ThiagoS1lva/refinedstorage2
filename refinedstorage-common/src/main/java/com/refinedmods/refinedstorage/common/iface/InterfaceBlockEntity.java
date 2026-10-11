@@ -58,7 +58,7 @@ public class InterfaceBlockEntity extends AbstractBaseNetworkNodeContainerBlockE
 
     public InterfaceBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getInterface(),
+            com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getInterface(),
             pos,
             state,
             new InterfaceNetworkNode(Platform.INSTANCE.getConfig().getInterface().getEnergyUsage())

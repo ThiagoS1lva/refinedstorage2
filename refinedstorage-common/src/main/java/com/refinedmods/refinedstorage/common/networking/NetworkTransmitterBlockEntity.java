@@ -73,7 +73,7 @@ public class NetworkTransmitterBlockEntity extends AbstractBaseNetworkNodeContai
     private NetworkReceiverKey receiverKey;
 
     public NetworkTransmitterBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getNetworkTransmitter(), pos, state, new SimpleNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getNetworkTransmitter(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getNetworkTransmitter().getEnergyUsage()
         ));
     }

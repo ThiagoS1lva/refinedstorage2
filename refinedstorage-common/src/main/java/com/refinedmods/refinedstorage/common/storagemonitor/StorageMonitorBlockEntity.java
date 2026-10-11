@@ -77,7 +77,7 @@ public class StorageMonitorBlockEntity extends AbstractBaseNetworkNodeContainerB
     private long lastExtractTime;
 
     public StorageMonitorBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getStorageMonitor(), pos, state, new SimpleNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getStorageMonitor(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getStorageMonitor().getEnergyUsage()
         ));
         final ResourceContainer resourceContainer = ResourceContainerImpl.createForFilter(1);

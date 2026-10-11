@@ -107,7 +107,7 @@ public class AutocrafterBlockEntity extends AbstractBaseNetworkNodeContainerBloc
 
     public AutocrafterBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getAutocrafter(),
+            com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getAutocrafter(),
             pos,
             state,
             new PatternProviderNetworkNode(Platform.INSTANCE.getConfig().getAutocrafter().getEnergyUsage(), PATTERNS)

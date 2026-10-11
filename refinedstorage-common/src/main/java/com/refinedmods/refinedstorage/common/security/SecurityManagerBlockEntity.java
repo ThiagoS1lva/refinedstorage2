@@ -67,7 +67,7 @@ public class SecurityManagerBlockEntity
 
     public SecurityManagerBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getSecurityManager(),
+            com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getSecurityManager(),
             pos,
             state,
             new SecurityDecisionProviderProxyNetworkNode(

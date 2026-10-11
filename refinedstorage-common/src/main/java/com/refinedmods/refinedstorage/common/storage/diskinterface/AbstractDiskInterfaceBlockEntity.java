@@ -43,7 +43,7 @@ public abstract class AbstractDiskInterfaceBlockEntity
     private final UpgradeContainer upgradeContainer;
 
     protected AbstractDiskInterfaceBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getDiskInterface(), pos, state, new StorageTransferNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getDiskInterface(), pos, state, new StorageTransferNetworkNode(
             Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsage(),
             Platform.INSTANCE.getConfig().getDiskInterface().getEnergyUsagePerDisk(),
             AMOUNT_OF_DISKS

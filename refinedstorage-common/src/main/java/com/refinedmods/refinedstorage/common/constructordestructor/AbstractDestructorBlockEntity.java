@@ -50,7 +50,7 @@ public abstract class AbstractDestructorBlockEntity extends AbstractCableLikeBlo
 
     protected AbstractDestructorBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getDestructor(),
+            com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getDestructor(),
             pos,
             state,
             new DestructorNetworkNode(Platform.INSTANCE.getConfig().getDestructor().getEnergyUsage())

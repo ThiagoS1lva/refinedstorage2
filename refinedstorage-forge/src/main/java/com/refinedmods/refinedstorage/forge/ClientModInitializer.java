@@ -61,14 +61,17 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
             registerAlternativeGridHints();
             registerDiskModels();
         }
+    }
 
+    @Mod.EventBusSubscriber(modid = IdentifierUtil.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+    public static class ClientRegisterEvents {
         @SubscribeEvent
         public static void onRegisterKeyMappings(final RegisterKeyMappingsEvent e) {
             final KeyMapping.Category category = new KeyMapping.Category(createIdentifier("keymappings"));
 
             final KeyMapping focusSearchBarKeyBinding = new KeyMapping(
                 ContentNames.FOCUS_SEARCH_BAR_TRANSLATION_KEY,
-                InputConstants.Type.KEYBOARD,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_TAB,
                 category
             );
@@ -79,7 +82,7 @@ public final class ClientModInitializer extends AbstractClientModInitializer {
                 ContentNames.CLEAR_CRAFTING_MATRIX_TO_NETWORK_TRANSLATION_KEY,
                 KeyConflictContext.GUI,
                 KeyModifier.CONTROL,
-                InputConstants.Type.KEYBOARD,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_X,
                 category,
                 0

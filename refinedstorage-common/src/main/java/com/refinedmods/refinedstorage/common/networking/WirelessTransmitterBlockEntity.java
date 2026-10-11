@@ -36,7 +36,7 @@ public class WirelessTransmitterBlockEntity extends AbstractBaseNetworkNodeConta
     private final UpgradeContainer upgradeContainer;
 
     public WirelessTransmitterBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getWirelessTransmitter(), pos, state, new SimpleNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getWirelessTransmitter(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getWirelessTransmitter().getEnergyUsage()
         ));
         this.upgradeContainer = new UpgradeContainer(

@@ -105,6 +105,7 @@ import com.refinedmods.refinedstorage.forge.api.RefinedStorageForgeApi;
 import com.refinedmods.refinedstorage.forge.api.RefinedStorageForgeApiProxy;
 import com.refinedmods.refinedstorage.forge.autocrafting.FluidHandlerExternalPatternSinkStrategyFactoryImpl;
 import com.refinedmods.refinedstorage.forge.autocrafting.ItemHandlerExternalPatternSinkStrategyFactoryImpl;
+import com.refinedmods.refinedstorage.forge.datagen.DataGenerators;
 import com.refinedmods.refinedstorage.forge.constructordestructor.ForgeConstructorBlockEntity;
 import com.refinedmods.refinedstorage.forge.constructordestructor.ForgeDestructorBlockEntity;
 import com.refinedmods.refinedstorage.forge.debug.DebugStickItem;
@@ -184,6 +185,7 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -249,7 +251,6 @@ public class ModInitializer extends AbstractModInitializer {
     public ModInitializer(final FMLJavaModLoadingContext context) {
         final BusGroup modBusGroup = context.getModBusGroup();
 
-        buildChannel();
         PlatformProxy.loadPlatform(new PlatformImpl(context));
         initializePlatformApi();
         ((RefinedStorageForgeApiProxy) RefinedStorageForgeApi.INSTANCE).setDelegate(
@@ -262,11 +263,13 @@ public class ModInitializer extends AbstractModInitializer {
         registerExporterTransferStrategyFactories();
         registerExternalStorageProviderFactories();
         registerExternalPatternSinkStrategyFactories();
+        buildChannel();
         registerContent(modBusGroup);
         registerSounds(modBusGroup);
         registerRecipeSerializers(modBusGroup);
 
         FMLCommonSetupEvent.getBus(modBusGroup).addListener(this::onCommonSetup);
+        GatherDataEvent.getBus(modBusGroup).addListener(DataGenerators::onGatherData);
 
         TickEvent.ServerTickEvent.Pre.BUS.addListener(this::onServerTick);
         ServerStartingEvent.BUS.addListener(this::onServerStarting);

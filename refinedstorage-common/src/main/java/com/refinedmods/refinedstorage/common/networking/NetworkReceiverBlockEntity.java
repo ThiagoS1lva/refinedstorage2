@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 public class NetworkReceiverBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntity<SimpleNetworkNode> {
     public NetworkReceiverBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getNetworkReceiver(),
+            com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getNetworkReceiver(),
             pos,
             state,
             new SimpleNetworkNode(Platform.INSTANCE.getConfig().getNetworkReceiver().getEnergyUsage())

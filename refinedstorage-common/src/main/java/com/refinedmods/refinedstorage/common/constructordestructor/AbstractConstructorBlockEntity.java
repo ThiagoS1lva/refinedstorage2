@@ -54,7 +54,7 @@ public abstract class AbstractConstructorBlockEntity extends AbstractCableLikeBl
 
     protected AbstractConstructorBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getConstructor(),
+            com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getConstructor(),
             pos,
             state,
             new ConstructorNetworkNode(Platform.INSTANCE.getConfig().getConstructor().getEnergyUsage())

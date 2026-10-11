@@ -34,7 +34,7 @@ public class AutocrafterManagerBlockEntity extends AbstractBaseNetworkNodeContai
     private final Set<AutocrafterManagerWatcher> watchers = new HashSet<>();
 
     public AutocrafterManagerBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getAutocrafterManager(), pos, state, new SimpleNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getAutocrafterManager(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getAutocrafterManager().getEnergyUsage()
         ));
     }

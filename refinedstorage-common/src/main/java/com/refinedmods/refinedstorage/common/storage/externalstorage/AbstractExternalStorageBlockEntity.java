@@ -53,7 +53,7 @@ public abstract class AbstractExternalStorageBlockEntity
     private boolean initialized;
 
     protected AbstractExternalStorageBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getExternalStorage(), pos, state, new ExternalStorageNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getExternalStorage(), pos, state, new ExternalStorageNetworkNode(
             Platform.INSTANCE.getConfig().getExternalStorage().getEnergyUsage(),
             System::currentTimeMillis
         ));

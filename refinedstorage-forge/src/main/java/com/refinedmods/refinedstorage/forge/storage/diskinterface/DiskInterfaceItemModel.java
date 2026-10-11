@@ -20,7 +20,6 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ResolvedModel;
 import net.minecraft.client.resources.model.cuboid.ItemTransform;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.resources.model.geometry.ItemQuads;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.DyeColor;
@@ -73,7 +72,7 @@ public class DiskInterfaceItemModel implements ItemModel {
         renderState.appendModelIdentityElement(this);
         final ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         modelRenderProperties.applyToLayer(layer, itemDisplayContext);
-        layer.setQuads(ItemQuads.split(baseQuads));
+        layer.prepareQuadList().addAll(baseQuads);
         final TypedEntityData<BlockEntityType<?>> customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
         if (customData == null) {
             return;
@@ -100,9 +99,8 @@ public class DiskInterfaceItemModel implements ItemModel {
         final ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         modelRenderProperties.applyToLayer(layer, itemDisplayContext);
         layer.setItemTransform(diskTransforms.get(itemDisplayContext).get(idx));
-        final List<BakedQuad> combinedQuads = new ArrayList<>(diskQuads);
-        combinedQuads.addAll(ledQuads);
-        layer.setQuads(ItemQuads.split(combinedQuads));
+        layer.prepareQuadList().addAll(diskQuads);
+        layer.prepareQuadList().addAll(ledQuads);
     }
 
     private static Matrix4f getOffsetTransform(final ItemTransform baseTransform) {

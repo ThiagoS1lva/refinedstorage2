@@ -69,7 +69,7 @@ public class RelayBlockEntity extends AbstractBaseNetworkNodeContainerBlockEntit
     private ExternalPatternSinkId id;
 
     public RelayBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getRelay(), pos, state, new RelayInputNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getRelay(), pos, state, new RelayInputNetworkNode(
             Platform.INSTANCE.getConfig().getRelay().getInputNetworkEnergyUsage()
         ));
         this.outputNode = new RelayOutputNetworkNode(

@@ -29,7 +29,7 @@ public abstract class AbstractDiskDriveBlockEntity extends AbstractDiskContainer
     private final StorageConfigurationContainerImpl configContainer;
 
     protected AbstractDiskDriveBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getDiskDrive(), pos, state, new StorageNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getDiskDrive(), pos, state, new StorageNetworkNode(
             Platform.INSTANCE.getConfig().getDiskDrive().getEnergyUsage(),
             Platform.INSTANCE.getConfig().getDiskDrive().getEnergyUsagePerDisk(),
             AMOUNT_OF_DISKS

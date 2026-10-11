@@ -120,7 +120,7 @@ public class PatternGridBlockEntity extends AbstractGridBlockEntity
 
     public PatternGridBlockEntity(final BlockPos pos, final BlockState state) {
         super(
-            BlockEntities.INSTANCE.getPatternGrid(),
+            com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getPatternGrid(),
             pos,
             state,
             Platform.INSTANCE.getConfig().getPatternGrid().getEnergyUsage()

@@ -33,7 +33,7 @@ public class AutocraftingMonitorBlockEntity extends AbstractBaseNetworkNodeConta
     private final Set<AutocraftingMonitorWatcher> watchers = new HashSet<>();
 
     public AutocraftingMonitorBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getAutocraftingMonitor(), pos, state, new SimpleNetworkNode(
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getAutocraftingMonitor(), pos, state, new SimpleNetworkNode(
             Platform.INSTANCE.getConfig().getAutocraftingMonitor().getEnergyUsage()
         ));
     }

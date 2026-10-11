@@ -16,7 +16,7 @@ import org.jspecify.annotations.Nullable;
 
 public class GridBlockEntity extends AbstractGridBlockEntity implements NetworkNodeExtendedMenuProvider<GridData> {
     public GridBlockEntity(final BlockPos pos, final BlockState state) {
-        super(BlockEntities.INSTANCE.getGrid(), pos, state, Platform.INSTANCE.getConfig().getGrid().getEnergyUsage());
+        super(com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getGrid(), pos, state, Platform.INSTANCE.getConfig().getGrid().getEnergyUsage());
     }
 
     @Override

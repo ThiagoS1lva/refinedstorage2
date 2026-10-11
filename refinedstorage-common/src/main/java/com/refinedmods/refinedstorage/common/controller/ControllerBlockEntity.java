@@ -60,8 +60,8 @@ public class ControllerBlockEntity extends AbstractBaseNetworkNodeContainerBlock
 
     private static BlockEntityType<ControllerBlockEntity> getBlockEntityType(final ControllerType type) {
         return type == ControllerType.CREATIVE
-            ? BlockEntities.INSTANCE.getCreativeController()
-            : BlockEntities.INSTANCE.getController();
+            ? com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getCreativeController()
+            : com.refinedmods.refinedstorage.common.content.BlockEntities.INSTANCE.getController();
     }
 
     public void updateEnergyTypeInLevel(final BlockState state) {
