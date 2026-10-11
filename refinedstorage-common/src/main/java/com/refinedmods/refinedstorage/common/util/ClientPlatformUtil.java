@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.platform.Window;
 import com.mojang.math.OctahedralGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -34,7 +33,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 public final class ClientPlatformUtil {
     private static final SystemToast.SystemToastId MESSAGE_TOAST_ID = new SystemToast.SystemToastId();
@@ -53,55 +51,54 @@ public final class ClientPlatformUtil {
 
     public static void addMessageToast(final Component title, final Component message) {
         final Minecraft minecraft = Minecraft.getInstance();
-        final SystemToast toast = SystemToast.multiline(minecraft, MESSAGE_TOAST_ID, title, message);
-        minecraft.getToastManager().addToast(toast);
+        SystemToast.add(minecraft.gui.toastManager(), MESSAGE_TOAST_ID, title, message);
     }
 
     public static void autocraftingPreviewResponseReceived(final UUID id, final Preview preview) {
-        if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
+        if (Minecraft.getInstance().gui.screen() instanceof AutocraftingPreviewScreen screen) {
             screen.getMenu().previewResponseReceived(id, preview);
         }
     }
 
     public static void autocraftingPreviewResponseReceived(final UUID id, final TreePreview preview) {
-        if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
+        if (Minecraft.getInstance().gui.screen() instanceof AutocraftingPreviewScreen screen) {
             screen.getMenu().previewResponseReceived(id, preview);
         }
     }
 
     public static void autocraftingPreviewCancelResponseReceived() {
-        if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
+        if (Minecraft.getInstance().gui.screen() instanceof AutocraftingPreviewScreen screen) {
             screen.cancelResponseReceived();
         }
     }
 
     public static void autocraftingResponseReceived(final UUID id, final boolean success) {
-        if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
+        if (Minecraft.getInstance().gui.screen() instanceof AutocraftingPreviewScreen screen) {
             screen.getMenu().responseReceived(id, success);
         }
     }
 
     public static void autocraftingPreviewMaxAmountResponseReceived(final long maxAmount) {
-        if (Minecraft.getInstance().screen instanceof AutocraftingPreviewScreen screen) {
+        if (Minecraft.getInstance().gui.screen() instanceof AutocraftingPreviewScreen screen) {
             screen.getMenu().maxAmountResponseReceived(maxAmount);
         }
     }
 
     public static void openCraftingPreview(final List<ResourceAmount> requests, @Nullable final Object parentScreen) {
         final Minecraft minecraft = Minecraft.getInstance();
-        if ((!(parentScreen instanceof Screen) && minecraft.screen == null) || minecraft.player == null) {
+        if ((!(parentScreen instanceof Screen) && minecraft.gui.screen() == null) || minecraft.player == null) {
             return;
         }
         final Inventory inventory = minecraft.player.getInventory();
-        minecraft.setScreen(new AutocraftingPreviewScreen(
-            parentScreen instanceof Screen castedParentScreen ? castedParentScreen : minecraft.screen,
+        minecraft.gui.setScreen(new AutocraftingPreviewScreen(
+            parentScreen instanceof Screen castedParentScreen ? castedParentScreen : minecraft.gui.screen(),
             inventory,
             requests.stream().map(AutocraftingRequest::of).toList()
         ));
     }
 
     public static void autocraftingTaskCompleted(final PlatformResourceKey resource, final long amount) {
-        Minecraft.getInstance().getToastManager().addToast(new TaskCompletedToast(resource, amount));
+        Minecraft.getInstance().gui.toastManager().addToast(new TaskCompletedToast(resource, amount));
     }
 
     public static void renderSlotHighlightBack(final GuiGraphicsExtractor graphics, final int x, final int y) {
@@ -152,9 +149,8 @@ public final class ClientPlatformUtil {
 
     public static boolean isCommandOrControlDown() {
         if (isCommand()) {
-            final Window window = Minecraft.getInstance().getWindow();
-            return InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_SUPER)
-                || InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_SUPER);
+            return InputConstants.isKeyDown(InputConstants.KEY_LGUI)
+                || InputConstants.isKeyDown(InputConstants.KEY_RGUI);
         }
         return Minecraft.getInstance().hasControlDown();
     }

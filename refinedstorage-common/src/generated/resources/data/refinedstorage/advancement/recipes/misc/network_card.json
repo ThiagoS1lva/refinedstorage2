@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:network_card"
+        "recipes": "refinedstorage:network_card"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

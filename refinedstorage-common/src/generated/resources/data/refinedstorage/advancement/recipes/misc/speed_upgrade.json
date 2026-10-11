@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:speed_upgrade"
+        "recipes": "refinedstorage:speed_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:network_transmitter"
+        "recipes": "refinedstorage:network_transmitter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

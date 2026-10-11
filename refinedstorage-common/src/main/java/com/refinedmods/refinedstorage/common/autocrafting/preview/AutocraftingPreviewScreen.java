@@ -276,7 +276,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
         if (treePreview == null || treePreview.rootNode() == null) {
             return;
         }
-        Minecraft.getInstance().setScreen(new FullscreenTreePreviewScreen(this, treePreview));
+        Minecraft.getInstance().gui.setScreen(new FullscreenTreePreviewScreen(this, treePreview));
     }
 
     private void toggleStyle(final ImageButton btn) {
@@ -765,8 +765,7 @@ public class AutocraftingPreviewScreen extends AbstractAmountScreen<Autocrafting
                 List.of(HelpClientTooltipComponent.createAlwaysDisplayed(MAX_HELP)),
                 x,
                 y,
-                DefaultTooltipPositioner.INSTANCE,
-                null
+                DefaultTooltipPositioner.INSTANCE, null, false
             );
         }
     }

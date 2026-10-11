@@ -16,7 +16,7 @@ public class StorageBlockLootItemFunction implements LootItemFunction {
 
     @Override
     public ItemStack apply(final ItemStack stack, final LootContext lootContext) {
-        final BlockEntity blockEntity = lootContext.getParameter(LootContextParams.BLOCK_ENTITY);
+        final BlockEntity blockEntity = lootContext.getOptional(LootContextParams.BLOCK_ENTITY);
         if (blockEntity instanceof StorageBlockEntity transferable) {
             RefinedStorageApi.INSTANCE.getStorageContainerItemHelper().transferFromBlockEntity(stack, transferable);
         }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:stack_upgrade"
+        "recipes": "refinedstorage:stack_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

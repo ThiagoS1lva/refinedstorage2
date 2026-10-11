@@ -180,19 +180,19 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
         if (hoveredSlot instanceof UpgradeSlot upgradeSlot) {
             final List<ClientTooltipComponent> tooltip = getUpgradeTooltip(menu.getCarried(), upgradeSlot);
             if (!tooltip.isEmpty()) {
-                graphics.tooltip(font, tooltip, x, y, DefaultTooltipPositioner.INSTANCE, null);
+                graphics.tooltip(font, tooltip, x, y, DefaultTooltipPositioner.INSTANCE, null, false);
                 return;
             }
         }
         if (hoveredSlot instanceof ResourceSlot resourceSlot && canInteractWithResourceSlot(resourceSlot, x, y)) {
             final List<ClientTooltipComponent> tooltip = getResourceSlotTooltip(menu.getCarried(), resourceSlot);
             if (!tooltip.isEmpty()) {
-                graphics.tooltip(font, tooltip, x, y, DefaultTooltipPositioner.INSTANCE, null);
+                graphics.tooltip(font, tooltip, x, y, DefaultTooltipPositioner.INSTANCE, null, false);
                 return;
             }
         }
         if (deferredTooltip != null) {
-            graphics.tooltip(font, deferredTooltip, x, y, DefaultTooltipPositioner.INSTANCE, null);
+            graphics.tooltip(font, deferredTooltip, x, y, DefaultTooltipPositioner.INSTANCE, null, false);
             deferredTooltip = null;
         }
         super.extractTooltip(graphics, x, y);
@@ -318,7 +318,7 @@ public abstract class AbstractBaseScreen<T extends AbstractContainerMenu> extend
             && isNotTryingToRemoveFilter
             && isNotCarryingItem;
         if (canOpen) {
-            minecraft.setScreen(createResourceAmountScreen(slot));
+            minecraft.gui.setScreen(createResourceAmountScreen(slot));
         }
         return canOpen;
     }

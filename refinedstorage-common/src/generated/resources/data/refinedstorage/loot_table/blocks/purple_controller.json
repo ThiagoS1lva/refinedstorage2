@@ -1,11 +1,11 @@
 {
   "type": "minecraft:block",
-  "functions": [
+  "modifier": [
     {
-      "function": "refinedstorage:energy"
+      "type": "refinedstorage:energy"
     },
     {
-      "function": "minecraft:copy_components",
+      "type": "minecraft:copy_components",
       "include": [
         "minecraft:custom_name"
       ],
@@ -14,19 +14,16 @@
   ],
   "pools": [
     {
-      "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "refinedstorage:purple_controller"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "refinedstorage:blocks/purple_controller"

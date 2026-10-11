@@ -592,7 +592,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
             lines
         );
         processedLines.add(AutocraftableClientTooltipComponent.autocraftable(hint));
-        graphics.tooltip(font, processedLines, x, y, DefaultTooltipPositioner.INSTANCE, null);
+        graphics.tooltip(font, processedLines, x, y, DefaultTooltipPositioner.INSTANCE, null, false);
         return true;
     }
 
@@ -608,7 +608,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         }
         final List<ClientTooltipComponent> hints = RefinedStorageClientApi.INSTANCE.getGridInsertionHints()
             .getHints(carried);
-        graphics.tooltip(font, hints, x, y, DefaultTooltipPositioner.INSTANCE, null);
+        graphics.tooltip(font, hints, x, y, DefaultTooltipPositioner.INSTANCE, null, false);
     }
 
     private boolean renderOverPinAreaTooltip(final GuiGraphicsExtractor graphics, final int x, final int y) {
@@ -623,7 +623,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         final Collection<TaskStatus> statuses = getMenu().getAutocraftingTaskStatuses(resource);
         if (!statuses.isEmpty()) {
             graphics.tooltip(font, List.of(new AutocraftingTaskStatusClientTooltipComponent(statuses,
-                getMenu().getAutocraftingTaskItems(resource))), x, y, DefaultTooltipPositioner.INSTANCE, null);
+                getMenu().getAutocraftingTaskItems(resource))), x, y, DefaultTooltipPositioner.INSTANCE, null, false);
         } else {
             renderGridResourceTooltip(graphics, x, y, pin.gridResource());
         }
@@ -660,7 +660,7 @@ public abstract class AbstractGridScreen<T extends AbstractGridContainerMenu> ex
         if (!getMenu().hasPin(resource)) {
             processedLines.add(PinClientTooltipComponent.INSTANCE);
         }
-        graphics.tooltip(font, processedLines, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null);
+        graphics.tooltip(font, processedLines, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, null, false);
     }
 
     private void addDetailedTooltip(final GridResource resource, final List<ClientTooltipComponent> lines) {

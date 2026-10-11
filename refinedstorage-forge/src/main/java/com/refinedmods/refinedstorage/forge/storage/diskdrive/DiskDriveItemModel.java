@@ -19,6 +19,7 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ResolvedModel;
 import net.minecraft.client.resources.model.cuboid.ItemTransform;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.ItemQuads;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.Item;
@@ -70,7 +71,7 @@ public class DiskDriveItemModel implements ItemModel {
         renderState.appendModelIdentityElement(this);
         final ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         modelRenderProperties.applyToLayer(layer, itemDisplayContext);
-        layer.prepareQuadList().addAll(baseQuads);
+        layer.setQuads(ItemQuads.split(baseQuads));
         final TypedEntityData<BlockEntityType<?>> customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
         if (customData == null) {
             return;
@@ -97,8 +98,9 @@ public class DiskDriveItemModel implements ItemModel {
         final ItemStackRenderState.LayerRenderState layer = renderState.newLayer();
         modelRenderProperties.applyToLayer(layer, itemDisplayContext);
         layer.setItemTransform(diskTransforms.get(itemDisplayContext).get(idx));
-        layer.prepareQuadList().addAll(diskQuads);
-        layer.prepareQuadList().addAll(ledQuads);
+        final List<BakedQuad> combinedQuads = new ArrayList<>(diskQuads);
+        combinedQuads.addAll(ledQuads);
+        layer.setQuads(ItemQuads.split(combinedQuads));
     }
 
     private static Matrix4f getOffsetTransform(final ItemTransform baseTransform) {

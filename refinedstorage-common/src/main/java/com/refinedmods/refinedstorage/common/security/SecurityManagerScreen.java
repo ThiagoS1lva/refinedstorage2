@@ -46,7 +46,7 @@ public class SecurityManagerScreen extends AbstractBaseScreen<SecurityManagerCon
                 HelpClientTooltipComponent.create(
                     createTranslation("gui", "security_manager.no_fallback_security_card_consequence")
                 )
-            ), x, y, DefaultTooltipPositioner.INSTANCE, null);
+            ), x, y, DefaultTooltipPositioner.INSTANCE, null, false);
             return;
         }
         super.extractTooltip(graphics, x, y);

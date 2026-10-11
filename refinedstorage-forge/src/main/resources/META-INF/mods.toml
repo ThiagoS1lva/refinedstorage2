@@ -1,31 +1,31 @@
 # Unofficial Forge port of Refined Storage.
 # Upstream: https://github.com/refinedmods/refinedstorage2 (MIT)
-# Target: Forge 26.1.2 (javafml 64).
+# Target: Forge 26.3 (javafml 66).
 
 modLoader="javafml"
-loaderVersion="[64,)"
+loaderVersion="[66,)"
 license="MIT"
 issueTrackerURL="https://github.com/ThiagoS1lva/refinedstorage2"
 
 [[mods]]
 modId="refinedstorage"
-version="3.2.1-forge-mvp"
+version="3.2.1-forge-26.3"
 displayName="Refined Storage (Unofficial Forge Port)"
 displayURL="https://github.com/ThiagoS1lva/refinedstorage2"
 authors="Refined Mods (upstream), unofficial Forge port"
-description='''Unofficial Forge 26.3 port of Refined Storage v3.2.1 (MVP: grid, disks, importer/exporter, basic storage).
+description='''Unofficial Forge 26.3 port of Refined Storage v3.2.1.
 Upstream: https://github.com/refinedmods/refinedstorage2 (MIT).'''
 
 [[dependencies.refinedstorage]]
     modId="forge"
     mandatory=true
-    versionRange="[64,)"
+    versionRange="[66,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.refinedstorage]]
     modId="minecraft"
     mandatory=true
-    versionRange="[26.1,26.2)"
+    versionRange="[26.3,26.4)"
     ordering="NONE"
     side="BOTH"

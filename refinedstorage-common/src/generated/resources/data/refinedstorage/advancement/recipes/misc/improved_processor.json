@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:improved_processor"
+        "recipes": "refinedstorage:improved_processor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

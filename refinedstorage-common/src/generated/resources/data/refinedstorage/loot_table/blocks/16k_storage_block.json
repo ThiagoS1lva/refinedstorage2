@@ -1,11 +1,11 @@
 {
   "type": "minecraft:block",
-  "functions": [
+  "modifier": [
     {
-      "function": "refinedstorage:storage_block"
+      "type": "refinedstorage:storage_block"
     },
     {
-      "function": "minecraft:copy_components",
+      "type": "minecraft:copy_components",
       "include": [
         "minecraft:custom_name"
       ],
@@ -14,19 +14,16 @@
   ],
   "pools": [
     {
-      "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "refinedstorage:16k_storage_block"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "refinedstorage:blocks/16k_storage_block"

@@ -6,30 +6,32 @@ import com.refinedmods.refinedstorage.common.content.Tags;
 import com.refinedmods.refinedstorage.common.storage.FluidStorageVariant;
 import com.refinedmods.refinedstorage.common.storage.ItemStorageVariant;
 
-import java.util.function.Consumer;
-
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.advancements.predicates.ItemPredicate;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.advancements.AdvancementSubProvider;
+import net.minecraft.data.worldgen.BootstrapContext;
 
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.MOD_ID;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.MOD_NAME;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createIdentifier;
 import static com.refinedmods.refinedstorage.common.util.IdentifierUtil.createTranslation;
 
-public class AdvancementProvider implements AdvancementSubProvider {
+public class AdvancementProvider extends AdvancementSubProvider {
+    public AdvancementProvider(final BootstrapContext<Advancement> output) {
+        super(output);
+    }
+
     @Override
-    public void generate(final HolderLookup.Provider registries, final Consumer<AdvancementHolder> consumer) {
-        final var items = registries.lookupOrThrow(Registries.ITEM);
+    public void generate() {
+        final var items = this.output.lookup(Registries.ITEM);
 
         final var root = Advancement.Builder.advancement()
-            .display(
-                Blocks.INSTANCE.getCreativeController().getDefault(),
+            .rootDisplay(
+                Blocks.INSTANCE.getCreativeController().getDefault().asItem(),
                 MOD_NAME,
                 createTranslation("advancements", "root.description"),
                 createIdentifier("gui/advancements"),
@@ -41,14 +43,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("controller_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.CONTROLLERS).build()
             ))
-            .save(consumer, MOD_ID + ":root");
+            .save(this.output, MOD_ID + ":root");
 
         final var connecting = Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getCable().getDefault(),
+                Blocks.INSTANCE.getCable().getDefault().asItem(),
                 createTranslation("advancements", "connecting"),
                 createTranslation("advancements", "connecting.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -58,14 +59,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("cable_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.CABLES).build()
             ))
-            .save(consumer, MOD_ID + ":connecting");
+            .save(this.output, MOD_ID + ":connecting");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getRelay().getDefault(),
+                Blocks.INSTANCE.getRelay().getDefault().asItem(),
                 createTranslation("advancements", "conditional_connecting"),
                 createTranslation("advancements", "conditional_connecting.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -75,14 +75,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("relay_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.RELAYS).build()
             ))
-            .save(consumer, MOD_ID + ":conditional_connecting");
+            .save(this.output, MOD_ID + ":conditional_connecting");
 
         final var drives = Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getDiskDrive(),
+                Blocks.INSTANCE.getDiskDrive().asItem(),
                 createTranslation("advancements", "drives"),
                 createTranslation("advancements", "drives.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -92,14 +91,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("disk_drive_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 Blocks.INSTANCE.getDiskDrive()
             ))
-            .save(consumer, MOD_ID + ":drives");
+            .save(this.output, MOD_ID + ":drives");
 
         final var storingItems = Advancement.Builder.advancement()
             .display(
                 Items.INSTANCE.getItemStorageDisk(ItemStorageVariant.ONE_K),
                 createTranslation("advancements", "storing_items"),
                 createTranslation("advancements", "storing_items.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -109,14 +107,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("storage_disk_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.STORAGE_DISKS).build()
             ))
-            .save(consumer, MOD_ID + ":storing_items");
+            .save(this.output, MOD_ID + ":storing_items");
 
         Advancement.Builder.advancement()
             .display(
                 Items.INSTANCE.getFluidStorageDisk(FluidStorageVariant.SIXTY_FOUR_B),
                 createTranslation("advancements", "storing_fluids"),
                 createTranslation("advancements", "storing_fluids.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -126,14 +123,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("fluid_storage_disk_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.FLUID_STORAGE_DISKS).build()
             ))
-            .save(consumer, MOD_ID + ":storing_fluids");
+            .save(this.output, MOD_ID + ":storing_fluids");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getDiskInterface().getDefault(),
+                Blocks.INSTANCE.getDiskInterface().getDefault().asItem(),
                 createTranslation("advancements", "interfacing_with_disks"),
                 createTranslation("advancements", "interfacing_with_disks.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -143,14 +139,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("disk_interface_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.DISK_INTERFACES).build()
             ))
-            .save(consumer, MOD_ID + ":interfacing_with_disks");
+            .save(this.output, MOD_ID + ":interfacing_with_disks");
 
         final var viewingYourStorage = Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getGrid().getDefault(),
+                Blocks.INSTANCE.getGrid().getDefault().asItem(),
                 createTranslation("advancements", "viewing_your_storage"),
                 createTranslation("advancements", "viewing_your_storage.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -160,14 +155,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("grid_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.GRIDS).build()
             ))
-            .save(consumer, MOD_ID + ":viewing_your_storage");
+            .save(this.output, MOD_ID + ":viewing_your_storage");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getCraftingGrid().getDefault(),
+                Blocks.INSTANCE.getCraftingGrid().getDefault().asItem(),
                 createTranslation("advancements", "upgrading_your_grid"),
                 createTranslation("advancements", "upgrading_your_grid.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -177,14 +171,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("crafting_grid_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.CRAFTING_GRIDS).build()
             ))
-            .save(consumer, MOD_ID + ":upgrading_your_grid");
+            .save(this.output, MOD_ID + ":upgrading_your_grid");
 
         Advancement.Builder.advancement()
             .display(
                 Items.INSTANCE.getPortableGrid(),
                 createTranslation("advancements", "portable_storage"),
                 createTranslation("advancements", "portable_storage.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -194,14 +187,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("portable_grid_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 Items.INSTANCE.getPortableGrid()
             ))
-            .save(consumer, MOD_ID + ":portable_storage");
+            .save(this.output, MOD_ID + ":portable_storage");
 
         final var exporting = Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getExporter().getDefault(),
+                Blocks.INSTANCE.getExporter().getDefault().asItem(),
                 createTranslation("advancements", "exporting"),
                 createTranslation("advancements", "exporting.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -211,14 +203,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("exporter_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.EXPORTERS).build()
             ))
-            .save(consumer, MOD_ID + ":exporting");
+            .save(this.output, MOD_ID + ":exporting");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getConstructor().getDefault(),
+                Blocks.INSTANCE.getConstructor().getDefault().asItem(),
                 createTranslation("advancements", "construction"),
                 createTranslation("advancements", "construction.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -228,14 +219,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("constructor_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.CONSTRUCTORS).build()
             ))
-            .save(consumer, MOD_ID + ":construction");
+            .save(this.output, MOD_ID + ":construction");
 
         final var importing = Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getImporter().getDefault(),
+                Blocks.INSTANCE.getImporter().getDefault().asItem(),
                 createTranslation("advancements", "importing"),
                 createTranslation("advancements", "importing.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -245,14 +235,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("importer_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.IMPORTERS).build()
             ))
-            .save(consumer, MOD_ID + ":importing");
+            .save(this.output, MOD_ID + ":importing");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getDestructor().getDefault(),
+                Blocks.INSTANCE.getDestructor().getDefault().asItem(),
                 createTranslation("advancements", "destruction"),
                 createTranslation("advancements", "destruction.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -262,14 +251,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("destructor_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.DESTRUCTORS).build()
             ))
-            .save(consumer, MOD_ID + ":destruction");
+            .save(this.output, MOD_ID + ":destruction");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getDetector().getDefault(),
+                Blocks.INSTANCE.getDetector().getDefault().asItem(),
                 createTranslation("advancements", "detecting"),
                 createTranslation("advancements", "detecting.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -279,14 +267,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("detector_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.DETECTORS).build()
             ))
-            .save(consumer, MOD_ID + ":detecting");
+            .save(this.output, MOD_ID + ":detecting");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getExternalStorage().getDefault(),
+                Blocks.INSTANCE.getExternalStorage().getDefault().asItem(),
                 createTranslation("advancements", "storing_externally"),
                 createTranslation("advancements", "storing_externally.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -296,14 +283,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("external_storage_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.EXTERNAL_STORAGES).build()
             ))
-            .save(consumer, MOD_ID + ":storing_externally");
+            .save(this.output, MOD_ID + ":storing_externally");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getStorageMonitor(),
+                Blocks.INSTANCE.getStorageMonitor().asItem(),
                 createTranslation("advancements", "better_than_a_barrel"),
                 createTranslation("advancements", "better_than_a_barrel.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -313,14 +299,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("storage_monitor_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 Blocks.INSTANCE.getStorageMonitor()
             ))
-            .save(consumer, MOD_ID + ":better_than_a_barrel");
+            .save(this.output, MOD_ID + ":better_than_a_barrel");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getInterface(),
+                Blocks.INSTANCE.getInterface().asItem(),
                 createTranslation("advancements", "interface_to_the_world"),
                 createTranslation("advancements", "interface_to_the_world.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -330,14 +315,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("interface_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 Blocks.INSTANCE.getInterface()
             ))
-            .save(consumer, MOD_ID + ":interface_to_the_world");
+            .save(this.output, MOD_ID + ":interface_to_the_world");
 
         final var wireless = Advancement.Builder.advancement()
             .display(
                 Items.INSTANCE.getWirelessGrid(),
                 createTranslation("advancements", "wireless"),
                 createTranslation("advancements", "wireless.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -348,14 +332,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
                 ItemPredicate.Builder.item().of(items, Items.INSTANCE.getWirelessGrid()).build(),
                 ItemPredicate.Builder.item().of(items, Tags.WIRELESS_TRANSMITTERS).build()
             ))
-            .save(consumer, MOD_ID + ":wireless");
+            .save(this.output, MOD_ID + ":wireless");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getNetworkTransmitter().getDefault(),
+                Blocks.INSTANCE.getNetworkTransmitter().getDefault().asItem(),
                 createTranslation("advancements", "no_cables_required"),
                 createTranslation("advancements", "no_cables_required.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -368,14 +351,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
                     ItemPredicate.Builder.item().of(items, Tags.NETWORK_RECEIVERS).build(),
                     ItemPredicate.Builder.item().of(items, Items.INSTANCE.getNetworkCard()).build()
                 ))
-            .save(consumer, MOD_ID + ":no_cables_required");
+            .save(this.output, MOD_ID + ":no_cables_required");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getSecurityManager().getDefault(),
+                Blocks.INSTANCE.getSecurityManager().getDefault().asItem(),
                 createTranslation("advancements", "security"),
                 createTranslation("advancements", "security.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -388,14 +370,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
                     .of(items, Items.INSTANCE.getSecurityCard(), Items.INSTANCE.getFallbackSecurityCard())
                     .build()
             ))
-            .save(consumer, MOD_ID + ":security");
+            .save(this.output, MOD_ID + ":security");
 
         Advancement.Builder.advancement()
             .display(
                 Items.INSTANCE.getUpgrade(),
                 createTranslation("advancements", "upgrading"),
                 createTranslation("advancements", "upgrading.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -405,14 +386,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("upgrade_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 Items.INSTANCE.getUpgrade()
             ))
-            .save(consumer, MOD_ID + ":upgrading");
+            .save(this.output, MOD_ID + ":upgrading");
 
         final var autocrafting = Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getAutocrafter().getDefault(),
+                Blocks.INSTANCE.getAutocrafter().getDefault().asItem(),
                 createTranslation("advancements", "autocrafting"),
                 createTranslation("advancements", "autocrafting.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -424,14 +404,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
                 ItemPredicate.Builder.item().of(items, Tags.AUTOCRAFTERS).build(),
                 ItemPredicate.Builder.item().of(items, Items.INSTANCE.getPattern()).build()
             ))
-            .save(consumer, MOD_ID + ":autocrafting");
+            .save(this.output, MOD_ID + ":autocrafting");
 
         Advancement.Builder.advancement()
             .display(
                 Items.INSTANCE.getAutocraftingUpgrade(),
                 createTranslation("advancements", "autocrafting_on_demand"),
                 createTranslation("advancements", "autocrafting_on_demand.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -441,14 +420,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("autocrafting_upgrade_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 Items.INSTANCE.getAutocraftingUpgrade()
             ))
-            .save(consumer, MOD_ID + ":autocrafting_on_demand");
+            .save(this.output, MOD_ID + ":autocrafting_on_demand");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getAutocrafterManager().getDefault(),
+                Blocks.INSTANCE.getAutocrafterManager().getDefault().asItem(),
                 createTranslation("advancements", "managing_patterns"),
                 createTranslation("advancements", "managing_patterns.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -458,14 +436,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("autocrafter_manager_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.AUTOCRAFTER_MANAGERS).build()
             ))
-            .save(consumer, MOD_ID + ":managing_patterns");
+            .save(this.output, MOD_ID + ":managing_patterns");
 
         Advancement.Builder.advancement()
             .display(
-                Blocks.INSTANCE.getAutocraftingMonitor().getDefault(),
+                Blocks.INSTANCE.getAutocraftingMonitor().getDefault().asItem(),
                 createTranslation("advancements", "monitoring"),
                 createTranslation("advancements", "monitoring.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -475,14 +452,13 @@ public class AdvancementProvider implements AdvancementSubProvider {
             .addCriterion("autocrafting_monitor_in_inventory", InventoryChangeTrigger.TriggerInstance.hasItems(
                 ItemPredicate.Builder.item().of(items, Tags.AUTOCRAFTING_MONITORS).build()
             ))
-            .save(consumer, MOD_ID + ":monitoring");
+            .save(this.output, MOD_ID + ":monitoring");
 
         Advancement.Builder.advancement()
             .display(
                 Items.INSTANCE.getWirelessAutocraftingMonitor(),
                 createTranslation("advancements", "wireless_monitoring"),
                 createTranslation("advancements", "wireless_monitoring.description"),
-                null,
                 AdvancementType.TASK,
                 true,
                 true,
@@ -493,6 +469,6 @@ public class AdvancementProvider implements AdvancementSubProvider {
                 InventoryChangeTrigger.TriggerInstance.hasItems(
                     Items.INSTANCE.getWirelessAutocraftingMonitor()
                 ))
-            .save(consumer, MOD_ID + ":wireless_monitoring");
+            .save(this.output, MOD_ID + ":wireless_monitoring");
     }
 }

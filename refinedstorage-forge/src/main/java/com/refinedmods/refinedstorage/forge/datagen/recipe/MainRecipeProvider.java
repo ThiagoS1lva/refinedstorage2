@@ -12,19 +12,22 @@ import com.refinedmods.refinedstorage.common.upgrade.UpgradeWithEnchantedBookRec
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.MultiRegistryBootstrap;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -32,6 +35,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
@@ -43,8 +47,12 @@ public class MainRecipeProvider extends RecipeProvider {
     private static final TagKey<Item> SILICON = TagKey.create(Registries.ITEM,
         Identifier.fromNamespaceAndPath("c", "silicon"));
 
-    public MainRecipeProvider(final HolderLookup.Provider registries, final RecipeOutput output) {
-        super(registries, output);
+    private final BootstrapContext<Recipe<?>> recipeOutput;
+
+    public MainRecipeProvider(final BootstrapContext<Recipe<?>> recipeOutput,
+                              final BootstrapContext<Advancement> advancementOutput) {
+        super(recipeOutput, advancementOutput);
+        this.recipeOutput = recipeOutput;
     }
 
     @Override
@@ -944,23 +952,20 @@ public class MainRecipeProvider extends RecipeProvider {
     }
 
     private <T> Holder<T> holderOrThrow(final ResourceKey<T> key) {
-        return registries.lookupOrThrow(key.registryKey()).getOrThrow(key);
+        return recipeOutput.lookup(key.registryKey()).getOrThrow(key);
     }
 
-    public static final class Runner extends RecipeProvider.Runner {
-        public Runner(final PackOutput packOutput, final CompletableFuture<HolderLookup.Provider> registries) {
-            super(packOutput, registries);
-        }
+    public static MultiRegistryBootstrap create() {
+        return new MultiRegistryBootstrap() {
+            @Override
+            public Set<ResourceKey<? extends Registry<?>>> requestedRegistries() {
+                return Set.of(Registries.RECIPE, Registries.ADVANCEMENT);
+            }
 
-        @Override
-        protected RecipeProvider createRecipeProvider(final HolderLookup.Provider registries,
-                                                      final RecipeOutput output) {
-            return new MainRecipeProvider(registries, output);
-        }
-
-        @Override
-        public String getName() {
-            return "Refined Storage recipes";
-        }
+            @Override
+            public void run(final MultiRegistryBootstrap.BootstrapGetter registries) {
+                new MainRecipeProvider(registries.get(Registries.RECIPE), registries.get(Registries.ADVANCEMENT)).buildRecipes();
+            }
+        };
     }
 }

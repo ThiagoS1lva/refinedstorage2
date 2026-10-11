@@ -222,7 +222,7 @@ public class CraftingGridScreen extends AbstractGridScreen<AbstractCraftingGridC
                 "gui",
                 "crafting_grid.press_shift_" + key + "_to_only_show_items_used_in_crafting"
             )));
-            graphics.tooltip(font, processedLines, x, y, DefaultTooltipPositioner.INSTANCE, null);
+            graphics.tooltip(font, processedLines, x, y, DefaultTooltipPositioner.INSTANCE, null, false);
             return;
         }
         super.extractTooltip(graphics, x, y);

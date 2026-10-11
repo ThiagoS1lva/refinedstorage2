@@ -13,7 +13,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 public abstract class AbstractEnergyLootItemFunction implements LootItemFunction {
     @Override
     public ItemStack apply(final ItemStack stack, final LootContext lootContext) {
-        final BlockEntity blockEntity = lootContext.getParameter(LootContextParams.BLOCK_ENTITY);
+        final BlockEntity blockEntity = lootContext.getOptional(LootContextParams.BLOCK_ENTITY);
         if (blockEntity instanceof TransferableBlockEntityEnergy transferableBlockEntityEnergy) {
             final long stored = transferableBlockEntityEnergy.getEnergyStorage().getStored();
             final SimpleEnergyItemContext context = new SimpleEnergyItemContext(stack);

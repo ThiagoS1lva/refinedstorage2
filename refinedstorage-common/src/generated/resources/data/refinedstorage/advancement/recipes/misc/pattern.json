@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:pattern"
+        "recipes": "refinedstorage:pattern"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

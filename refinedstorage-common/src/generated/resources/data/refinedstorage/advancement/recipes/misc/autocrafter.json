@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:autocrafter"
+        "recipes": "refinedstorage:autocrafter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:autocrafting_monitor"
+        "recipes": "refinedstorage:autocrafting_monitor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -18,7 +18,9 @@ import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import java.util.Locale;
 import net.minecraft.network.chat.MutableComponent;
+import org.jspecify.annotations.Nullable;
 
 class GridSearchBoxWidget extends SearchFieldWidget implements GridSearchBox {
     private final Set<Consumer<String>> listeners = new HashSet<>();
@@ -68,7 +70,7 @@ class GridSearchBoxWidget extends SearchFieldWidget implements GridSearchBox {
     }
 
     private Component toComponent(final SyntaxHighlightedCharacter character) {
-        final ChatFormatting color = ChatFormatting.getByName(character.getColor());
+        final ChatFormatting color = getFormattingByName(character.getColor());
         return Component.literal(character.getCharacter()).withStyle(color == null ? ChatFormatting.WHITE : color);
     }
 
@@ -85,5 +87,16 @@ class GridSearchBoxWidget extends SearchFieldWidget implements GridSearchBox {
     public void setValid(final boolean valid) {
         this.valid = valid;
         setTextColor(valid ? 0xFFFFFFFF : 0xFFFF5555);
+    }
+
+    private static @Nullable ChatFormatting getFormattingByName(final String name) {
+        if (name == null) {
+            return null;
+        }
+        try {
+            return ChatFormatting.valueOf(name.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

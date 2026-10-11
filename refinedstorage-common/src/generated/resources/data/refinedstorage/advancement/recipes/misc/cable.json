@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:cable"
+        "recipes": "refinedstorage:cable"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

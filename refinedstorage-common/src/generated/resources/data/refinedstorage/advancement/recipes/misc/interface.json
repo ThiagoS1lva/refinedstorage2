@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:interface"
+        "recipes": "refinedstorage:interface"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

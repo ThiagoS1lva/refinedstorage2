@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:portable_grid"
+        "recipes": "refinedstorage:portable_grid"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

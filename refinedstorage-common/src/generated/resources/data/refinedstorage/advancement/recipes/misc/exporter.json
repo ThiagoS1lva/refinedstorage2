@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:exporter"
+        "recipes": "refinedstorage:exporter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

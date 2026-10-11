@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:regulator_upgrade"
+        "recipes": "refinedstorage:regulator_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:basic_processor"
+        "recipes": "refinedstorage:basic_processor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

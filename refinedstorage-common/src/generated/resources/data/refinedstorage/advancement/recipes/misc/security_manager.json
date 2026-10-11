@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:security_manager"
+        "recipes": "refinedstorage:security_manager"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

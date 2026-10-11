@@ -7,6 +7,7 @@ import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 import java.util.List;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.RecipeCraftingHolder;
 import net.minecraft.world.inventory.ResultSlot;
@@ -82,7 +83,7 @@ class CraftingGridResultSlot extends ResultSlot {
                 remainingItem.grow(matrixStack.getCount());
                 craftingGrid.getCraftingMatrix().setItem(index, remainingItem);
             } else if (!player.getInventory().add(remainingItem)) {
-                player.drop(remainingItem, false);
+                player.drop(remainingItem, false, Prediction.PREDICTED);
             }
         });
     }

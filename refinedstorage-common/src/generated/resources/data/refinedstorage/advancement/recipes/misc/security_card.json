@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:security_card"
+        "recipes": "refinedstorage:security_card"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

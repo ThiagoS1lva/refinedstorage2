@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:destruction_core"
+        "recipes": "refinedstorage:destruction_core"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -65,8 +65,7 @@ public abstract class AbstractFilterScreen<T extends AbstractBaseContainerMenu> 
                     List.of(ClientTooltipComponent.create(indicator.getTooltip().getVisualOrderText())),
                     mouseX,
                     mouseY,
-                    DefaultTooltipPositioner.INSTANCE,
-                    null
+                    DefaultTooltipPositioner.INSTANCE, null, false
                 );
                 return true;
             }

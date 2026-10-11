@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:machine_casing"
+        "recipes": "refinedstorage:machine_casing"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

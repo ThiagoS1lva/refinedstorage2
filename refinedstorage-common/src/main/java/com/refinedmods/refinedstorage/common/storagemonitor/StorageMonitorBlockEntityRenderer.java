@@ -55,8 +55,8 @@ public class StorageMonitorBlockEntityRenderer
         final ResourceRendering rendering = RefinedStorageClientApi.INSTANCE.getResourceRendering(resource.getClass());
         poseStack.pushPose();
         poseStack.translate(0.5, 0.5, 0.5);
-        poseStack.mulPose(state.direction.getQuaternion());
-        poseStack.mulPose(ROTATE_TO_FRONT);
+        poseStack.rotate(state.direction.getQuaternion());
+        poseStack.rotate(ROTATE_TO_FRONT);
         poseStack.translate(0, 0, 0.5);
         renderAmount(poseStack, nodes, rendering.formatAmount(state.amount));
         renderResource(poseStack, nodes, resource, rendering, state.seed);

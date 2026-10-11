@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:silicon"
+        "recipes": "refinedstorage:silicon"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

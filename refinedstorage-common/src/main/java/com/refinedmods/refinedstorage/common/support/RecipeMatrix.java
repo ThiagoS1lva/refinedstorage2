@@ -142,7 +142,7 @@ public class RecipeMatrix<T extends Recipe<I>, I extends RecipeInput> {
     }
 
     public void load(final ItemContainerContents contents) {
-        final List<ItemStack> items = contents.allItemsCopyStream().toList();
+        final List<ItemStack> items = contents.itemCopies().toList();
         for (int i = 0; i < items.size(); ++i) {
             matrix.setItem(i, items.get(i));
         }

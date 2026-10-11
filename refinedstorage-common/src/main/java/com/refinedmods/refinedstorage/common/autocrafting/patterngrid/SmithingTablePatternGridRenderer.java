@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -85,7 +85,7 @@ class SmithingTablePatternGridRenderer implements PatternGridRenderer {
         if (level == null) {
             return;
         }
-        this.armorStandPreview.entityType = EntityType.ARMOR_STAND;
+        this.armorStandPreview.entityType = EntityTypes.ARMOR_STAND;
         this.armorStandPreview.showBasePlate = false;
         this.armorStandPreview.showArms = true;
         this.armorStandPreview.xRot = 25.0F;
@@ -153,15 +153,15 @@ class SmithingTablePatternGridRenderer implements PatternGridRenderer {
         menu.getSmithingTableTemplateItem().ifPresentOrElse(template -> {
             if (hoveredSlot.index == firstSlotIndex + 1) {
                 graphics.tooltip(font, split(font, template.getBaseSlotDescription()), mouseX, mouseY,
-                    DefaultTooltipPositioner.INSTANCE, null);
+                    DefaultTooltipPositioner.INSTANCE, null, false);
             } else if (hoveredSlot.index == firstSlotIndex + 2) {
                 graphics.tooltip(font, split(font, template.getAdditionSlotDescription()), mouseX, mouseY,
-                    DefaultTooltipPositioner.INSTANCE, null);
+                    DefaultTooltipPositioner.INSTANCE, null, false);
             }
         }, () -> {
             if (hoveredSlot.index == firstSlotIndex) {
                 graphics.tooltip(font, split(font, MISSING_SMITHING_TEMPLATE_TOOLTIP), mouseX, mouseY,
-                    DefaultTooltipPositioner.INSTANCE, null);
+                    DefaultTooltipPositioner.INSTANCE, null, false);
             }
         });
     }

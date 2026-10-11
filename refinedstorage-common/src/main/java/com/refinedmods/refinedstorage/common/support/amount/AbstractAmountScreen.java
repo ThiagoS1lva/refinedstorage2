@@ -324,7 +324,7 @@ public abstract class AbstractAmountScreen<T extends AbstractContainerMenu, N ex
 
     private boolean tryCloseToParent() {
         if (parent != null) {
-            Minecraft.getInstance().setScreen(parent);
+            Minecraft.getInstance().gui.setScreen(parent);
             return true;
         }
         return false;

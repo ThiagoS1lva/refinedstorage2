@@ -59,10 +59,14 @@ public class FuzzyGridOperations implements GridOperations {
         if (!success) {
             LOGGER.warn("Failed to extract resource in Grid: {}", resource);
             if (resource instanceof ItemResource itemResource) {
-                itemResource.components().entrySet().forEach(e -> {
-                    final DataComponentType<?> componentType = e.getKey();
-                    final Identifier key = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(componentType);
-                    LOGGER.warn("Component {} = {}", key, e.getValue());
+                final net.minecraft.core.component.DataComponentPatch.SplitResult split = itemResource.components().split();
+                split.added().forEach(e -> {
+                    final Identifier key = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(e.type());
+                    LOGGER.warn("Component {} = {}", key, e.value());
+                });
+                split.removed().forEach(type -> {
+                    final Identifier key = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
+                    LOGGER.warn("Component {} removed", key);
                 });
             }
         }

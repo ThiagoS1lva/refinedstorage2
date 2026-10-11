@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:storage_housing"
+        "recipes": "refinedstorage:storage_housing"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

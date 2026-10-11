@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:detector"
+        "recipes": "refinedstorage:detector"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:external_storage"
+        "recipes": "refinedstorage:external_storage"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

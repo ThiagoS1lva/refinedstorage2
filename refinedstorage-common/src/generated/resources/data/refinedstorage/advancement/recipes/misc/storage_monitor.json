@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:storage_monitor"
+        "recipes": "refinedstorage:storage_monitor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

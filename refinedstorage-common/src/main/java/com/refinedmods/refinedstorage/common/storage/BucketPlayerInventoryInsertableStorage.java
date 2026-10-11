@@ -10,6 +10,7 @@ import com.refinedmods.refinedstorage.common.Platform;
 import com.refinedmods.refinedstorage.common.support.resource.FluidResource;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -59,7 +60,7 @@ public class BucketPlayerInventoryInsertableStorage implements InsertableStorage
                         final Runnable rollbackAction) {
         if (action == Action.EXECUTE && !playerInventory.add(filledBucketStack)) {
             if (mayDropFilledBucket) {
-                playerInventory.player.drop(filledBucketStack, false);
+                playerInventory.player.drop(filledBucketStack, false, Prediction.PREDICTED);
             } else {
                 rollbackAction.run();
                 return 0;

@@ -230,7 +230,7 @@ public class AutocrafterScreen extends AbstractBaseScreen<AutocrafterContainerMe
         if (hoveredSlot instanceof PatternSlot patternSlot
             && !patternSlot.hasItem()
             && getMenu().getCarried().isEmpty()) {
-            graphics.tooltip(font, EMPTY_PATTERN_SLOT, x, y, DefaultTooltipPositioner.INSTANCE, null);
+            graphics.tooltip(font, EMPTY_PATTERN_SLOT, x, y, DefaultTooltipPositioner.INSTANCE, null, false);
             return;
         }
         final Component chainingTitle = getChainingTitle(getMenu());
@@ -243,8 +243,7 @@ public class AutocrafterScreen extends AbstractBaseScreen<AutocrafterContainerMe
                 List.of(HelpClientTooltipComponent.createAlwaysDisplayed(chainingTooltip)),
                 x,
                 y,
-                DefaultTooltipPositioner.INSTANCE,
-                null
+                DefaultTooltipPositioner.INSTANCE, null, false
             );
             return;
         }

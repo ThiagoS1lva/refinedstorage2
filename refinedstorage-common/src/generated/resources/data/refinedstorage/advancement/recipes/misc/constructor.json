@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:constructor"
+        "recipes": "refinedstorage:constructor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -14,13 +14,14 @@ import java.util.Set;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class BlockDropsProvider extends BlockLootSubProvider {
-    public BlockDropsProvider(final HolderLookup.Provider provider) {
+    public BlockDropsProvider(final LootTableSubProvider.Context provider) {
         super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
     }
 

@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "refinedstorage:autocrafting_upgrade"
+        "recipes": "refinedstorage:autocrafting_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

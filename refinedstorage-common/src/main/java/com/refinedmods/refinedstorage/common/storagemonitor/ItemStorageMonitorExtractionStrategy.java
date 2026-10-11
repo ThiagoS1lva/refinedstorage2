@@ -8,6 +8,7 @@ import com.refinedmods.refinedstorage.api.storage.Actor;
 import com.refinedmods.refinedstorage.common.api.storagemonitor.StorageMonitorExtractionStrategy;
 import com.refinedmods.refinedstorage.common.support.resource.ItemResource;
 
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -30,7 +31,7 @@ public class ItemStorageMonitorExtractionStrategy implements StorageMonitorExtra
         if (extracted > 0) {
             final ItemStack stack = itemResource.toItemStack(extracted);
             if (!player.getInventory().add(stack)) {
-                player.drop(stack, false);
+                player.drop(stack, false, Prediction.PREDICTED);
             }
             return true;
         }

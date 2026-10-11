@@ -20,6 +20,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamEncoder;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -117,7 +118,7 @@ public class CraftingGridBlockEntity extends AbstractGridBlockEntity
         if (inserted != craftedStack.getCount()) {
             final long remainder = craftedStack.getCount() - inserted;
             final ItemStack remainderStack = craftedStack.copyWithCount((int) remainder);
-            player.drop(remainderStack, false);
+            player.drop(remainderStack, false, Prediction.PREDICTED);
         }
     }
 
